@@ -27,7 +27,7 @@
 
 .select:focus {
   outline: none;
-  border-color: var(--color-keysight-red);
+  border-color: var(--color-custom-gray);
 }
 
 .chevron {

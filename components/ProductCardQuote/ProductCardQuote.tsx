@@ -26,6 +26,7 @@ export default function ProductCardQuote({
 
   const shadowRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const cardClipRef = useRef<HTMLDivElement>(null);
   const infoBtnRef = useRef<HTMLButtonElement>(null);
   const bookmarkBtnRef = useRef<HTMLButtonElement>(null);
   const bookmarkIconRef = useRef<HTMLSpanElement>(null);
@@ -47,6 +48,14 @@ export default function ProductCardQuote({
       opacity: isHovered ? 1 : 0,
       duration: 0.28,
       ease: "power2.out",
+    });
+    // lift the whole card above later grid siblings while the quote bar is
+    // dropped down over them; drop back once its collapse animation finishes
+    // so it doesn't linger above a card it's no longer overlapping
+    gsap.to(cardRef.current, {
+      zIndex: isHovered ? 5 : 0,
+      duration: 0,
+      delay: isHovered ? 0 : 0.32,
     });
     // safety net: fast cursor movement can leave the button's own
     // mouseenter/mouseleave pair out of sync, so force the pill hidden
@@ -91,11 +100,12 @@ export default function ProductCardQuote({
     });
   }, [isHovered]);
 
-  // "Request a quote" is a normal sibling section inside the same clipped
-  // card body as everything else — it grows the tile's real height on
-  // hover rather than floating a separately-bordered piece below it, so
-  // the shared border, shadow, and rounded corners just naturally wrap
-  // the whole thing with no seam to keep in sync.
+  // "Request a quote" drops down as a floating overlay below the card (see
+  // .quoteBar) rather than growing the card's own box. Squaring off the
+  // card's bottom corners in step with the reveal keeps the joint between
+  // the two flush — otherwise the card's own rounded bottom corners and the
+  // quote bar's rounded top-adjacent edge would read as two separate
+  // rounded rectangles stacked on top of each other instead of one shape.
   useEffect(() => {
     gsap.to(quoteBarRef.current, {
       height: isHovered ? 68 : 0,
@@ -104,7 +114,14 @@ export default function ProductCardQuote({
       duration: 0.32,
       ease: "power2.out",
     });
+    gsap.to([cardRef.current, cardClipRef.current, shadowRef.current], {
+      borderBottomLeftRadius: isHovered ? 0 : 8,
+      borderBottomRightRadius: isHovered ? 0 : 8,
+      duration: 0.32,
+      ease: "power2.out",
+    });
   }, [isHovered]);
+
 
   // icon reveal (fade only, no growing)
   useEffect(() => {
@@ -211,7 +228,7 @@ export default function ProductCardQuote({
     >
       <div ref={shadowRef} className={styles.shadowLayer} />
 
-      <div className={styles.cardClip}>
+      <div ref={cardClipRef} className={styles.cardClip}>
         <div className={styles.imageWrap}>
           <div className={styles.imageInner}>
             <div ref={zoomWrapRef} className={styles.imageZoomWrap}>
@@ -322,16 +339,16 @@ export default function ProductCardQuote({
             </div>
           )}
         </div>
+      </div>
 
-        <div ref={quoteBarRef} className={styles.quoteBar}>
-          <button
-            type="button"
-            className={styles.quoteButton}
-            onClick={(e) => e.stopPropagation()}
-          >
-            Request quote
-          </button>
-        </div>
+      <div ref={quoteBarRef} className={styles.quoteBar}>
+        <button
+          type="button"
+          className={styles.quoteButton}
+          onClick={(e) => e.stopPropagation()}
+        >
+          Request quote
+        </button>
       </div>
 
       <button

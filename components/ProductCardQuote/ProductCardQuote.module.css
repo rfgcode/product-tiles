@@ -339,20 +339,29 @@
   transform: scale(1.08);
 }
 
-/* --- hover-reveal quote bar: a normal sibling of the other sections
-   inside .cardClip, last in flow. It grows the card's real height on
-   hover instead of floating a separately-styled piece below it, so the
-   card's own border/shadow/rounded corners (all on .card and .cardClip)
-   already wrap it correctly with nothing to keep in sync. --- */
+/* --- hover-reveal quote bar: absolutely positioned just below the card
+   (a sibling of .cardClip, not inside it, since cardClip's overflow:hidden
+   would otherwise clip it). It drops down and overlaps whatever sits below
+   the card in a grid rather than growing the card's own box, so neighboring
+   rows never get pushed down when this reveals. --- */
 .quoteBar {
-  width: 100%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
   height: 0;
   overflow: hidden;
-  border-top: 1px solid transparent;
+  background: var(--color-white);
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.12);
   opacity: 0;
   display: flex;
   align-items: center;
   padding: 0 16px;
+  z-index: 2;
 }
 
 .quoteButton {

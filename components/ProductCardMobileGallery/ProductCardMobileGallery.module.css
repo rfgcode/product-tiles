@@ -60,12 +60,14 @@
   opacity: 1;
 }
 
-/* subtle dark tint over the product photo, matched to the Figma spec */
+/* dark tint over the product photo, deep enough for the white gallery
+   dots below to read against a light product photo (matched to the
+   desktop gallery card) */
 .imageOverlay {
   position: absolute;
   inset: 0;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.18);
   pointer-events: none;
 }
 
