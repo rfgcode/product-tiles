@@ -1,0 +1,46 @@
+:root {
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-dark-gray: #373a36;
+  --color-custom-gray: #797a7c;
+  --color-keysight-red: #e90029;
+  --color-light-gray: #e9eaed;
+  --color-extra-light-gray: #f6f7f9;
+
+  --font-sans: "Graphik LC", "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --ease-snappy: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--color-extra-light-gray);
+  color: var(--color-black);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+}

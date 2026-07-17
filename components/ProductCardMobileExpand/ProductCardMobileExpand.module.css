@@ -1,0 +1,239 @@
+/* Mobile / touch variant matched to Figma frame 7928:600454 (176.5 x 306.375px):
+   no hover states, static border, no bookmark. Tapping the bottom feature
+   bar reveals a full-width details panel (unlike the desktop cards' inset
+   floating popover) that overlays the price block and the tail of the
+   description; a floating circular chevron closes it again. The card picks
+   up a drop shadow while that panel is open, to read as raised/elevated. */
+.card {
+  position: relative;
+  width: 176.5px;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
+}
+
+/* sits on .card (not .cardClip) so the shadow isn't clipped by the
+   cardClip's overflow:hidden, matching the other cards' pattern */
+.shadowLayer {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cardClip {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- image --- */
+.imageWrap {
+  padding: 8px;
+  width: 100%;
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 284 / 213;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.imageInner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* subtle dark tint over the product photo, matched to the Figma spec */
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+/* --- product info text blocks --- */
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0 8px 6px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modelNumber {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* --- price --- */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 13px 8px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.fromLabel {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22px;
+  text-transform: uppercase;
+  color: var(--color-custom-gray);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.currentPrice {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-black);
+}
+
+.discount {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-keysight-red);
+}
+
+/* --- bottom feature bar: tap to open the full-width details panel --- */
+.featureBar {
+  position: relative;
+  width: 100%;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.featureBarButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.feature {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.featureIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+}
+
+.featureLabel {
+  font-size: 12px;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  flex-shrink: 0;
+}
+
+/* --- details panel: full-width and flush with the card edges (no inset,
+   no independent border-radius) — the shared .cardClip rounding and
+   overflow:hidden already give it a clean bottom edge --- */
+.panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-extra-light-gray);
+  border-top: 1px solid var(--color-light-gray);
+  padding: 15px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5px;
+  z-index: 2;
+}
+
+.panelClose {
+  position: absolute;
+  top: -12px;
+  right: 9px;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-black);
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
+}
+
+.panelRow {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  width: 100%;
+}
+
+.panelIcon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  flex-shrink: 0;
+}
+
+.panelLabel {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-black);
+  flex: 1;
+  min-width: 0;
+}

@@ -1,0 +1,178 @@
+/* Mobile / touch variant, matched to the Figma frame (176.5 x 310.375px):
+   no hover states, no shadow (just a static 1px border), no options list,
+   no second feature, no expand affordance — a deliberately compact tile.
+   Tapping the card (but not a control inside it) gives a brief
+   pressed/scale-down state to read as a link, even though nothing is
+   wired up to navigate in this prototype. */
+.card {
+  position: relative;
+  width: 176.5px;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+.card:has(button:active) {
+  transform: none;
+}
+
+.cardClip {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- image --- */
+.imageWrap {
+  padding: 8px;
+  width: 100%;
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 284 / 213;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.imageInner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* subtle dark tint over the product photo, matched to the Figma spec */
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+/* --- bookmark: the only icon on this variant, always visible --- */
+.iconButton {
+  position: absolute;
+  top: 13.88px;
+  right: 13.5px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-dark-gray);
+}
+
+/* --- product info text blocks --- */
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0 8px 6px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modelNumber {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* --- price --- */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 13px 8px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.fromLabel {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22px;
+  text-transform: uppercase;
+  color: var(--color-custom-gray);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.currentPrice {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-black);
+}
+
+.discount {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-keysight-red);
+}
+
+/* --- bottom feature row: "Refurbished" only, no warranty, no expand --- */
+.featureBar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.feature {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.featureIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+}
+
+.featureLabel {
+  font-size: 12px;
+  color: var(--color-black);
+  white-space: nowrap;
+}
