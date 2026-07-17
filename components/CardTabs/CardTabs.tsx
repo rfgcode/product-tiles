@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./CardTabs.module.css";
+import { ChevronIcon } from "../icons";
 
 export type TabDef = {
   id: string;
@@ -17,19 +18,22 @@ export default function CardTabs({
   onChange: (id: string) => void;
 }) {
   return (
-    <div className={styles.tabs} role="tablist">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          type="button"
-          role="tab"
-          aria-selected={tab.id === activeId}
-          className={`${styles.tab} ${tab.id === activeId ? styles.tabActive : ""}`}
-          onClick={() => onChange(tab.id)}
-        >
-          {tab.label}
-        </button>
-      ))}
+    <div className={styles.selectWrap}>
+      <select
+        className={styles.select}
+        value={activeId}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Select card variant"
+      >
+        {tabs.map((tab) => (
+          <option key={tab.id} value={tab.id}>
+            {tab.label}
+          </option>
+        ))}
+      </select>
+      <span className={styles.chevron}>
+        <ChevronIcon size={12} />
+      </span>
     </div>
   );
 }

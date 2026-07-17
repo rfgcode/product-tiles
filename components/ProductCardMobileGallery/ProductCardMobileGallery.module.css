@@ -1,9 +1,6 @@
-/* Mobile / touch variant matched to Figma frame 7928:600454 (176.5 x 306.375px):
-   no hover states, static border, no bookmark. Tapping the bottom feature
-   bar reveals a full-width details panel (unlike the desktop cards' inset
-   floating popover) that overlays the price block and the tail of the
-   description; a floating circular chevron closes it again. The card picks
-   up a drop shadow while that panel is open, to read as raised/elevated. */
+/* Mobile / touch gallery variant: same layout and behavior as the Mobile
+   Expand card, but the image section cycles through the four gallery
+   photos on tap instead of showing a single static shot. */
 .card {
   position: relative;
   width: 176.5px;
@@ -30,10 +27,15 @@
   overflow: hidden;
 }
 
-/* --- image --- */
+/* --- image / gallery --- */
 .imageWrap {
+  display: block;
   padding: 8px;
   width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
 }
 
 .imageInner {
@@ -45,12 +47,17 @@
   background: var(--color-white);
 }
 
-.imageInner img {
+.galleryImage {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+}
+
+.galleryImageActive {
+  opacity: 1;
 }
 
 /* subtle dark tint over the product photo, matched to the Figma spec */
@@ -60,6 +67,31 @@
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.04);
   pointer-events: none;
+}
+
+/* on-image affordance showing which of the four photos is active */
+.galleryDots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  z-index: 1;
+}
+
+.galleryDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.galleryDotActive {
+  background: var(--color-white);
+  transform: scale(1.3);
 }
 
 /* --- product info text blocks --- */
