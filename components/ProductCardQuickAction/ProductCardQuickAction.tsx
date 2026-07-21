@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import styles from "./ProductCardGallery.module.css";
+import styles from "./ProductCardQuickAction.module.css";
 import {
   BadgeCheckIcon,
+  BookmarkIcon,
+  BookmarkOutlineIcon,
+  CartCirclePlusIcon,
   ChevronIcon,
   ListCheckIcon,
   PlugCircleCheckIcon,
@@ -22,19 +25,25 @@ const GALLERY_IMAGES = [
   { src: "/images/gallery/gallery-side.jpg", alt: "UXA Signal Analyzer, side view" },
 ];
 
-export default function ProductCardGallery() {
+export default function ProductCardQuickAction() {
   const [isHovered, setIsHovered] = useState(false);
   const [isImageHovered, setIsImageHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [renderPopover, setRenderPopover] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
 
   const shadowRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const bookmarkBtnRef = useRef<HTMLButtonElement>(null);
+  const bookmarkIconRef = useRef<HTMLSpanElement>(null);
+  const cartBtnRef = useRef<HTMLButtonElement>(null);
   const zoomWrapRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const pillRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
+
+  const showChrome = isHovered || isExpanded;
 
   // card outline + drop shadow: strictly tied to real cursor hover, nothing else
   useEffect(() => {
@@ -49,11 +58,17 @@ export default function ProductCardGallery() {
       ease: "power2.out",
     });
     // safety net: fast cursor movement can leave the button's own
-    // mouseenter/mouseleave pair out of sync, so force the pill hidden
-    // the moment the cursor is confirmed off the card entirely
+    // mouseenter/mouseleave pair out of sync, so force the pill and the
+    // cart button hidden the moment the cursor is confirmed off the card
+    // entirely — without this, a quick pass across the tile can leave the
+    // cart button's own fade-out tween stranded mid-flight (or overwritten
+    // by a stale one) and it sticks around alongside the other, correctly
+    // reset hover elements
     if (!isHovered) {
       gsap.killTweensOf(pillRef.current);
       gsap.set(pillRef.current, { opacity: 0 });
+      gsap.killTweensOf(cartBtnRef.current);
+      gsap.set(cartBtnRef.current, { opacity: 0, pointerEvents: "none" });
     }
   }, [isHovered]);
 
@@ -128,6 +143,25 @@ export default function ProductCardGallery() {
     });
   }, [activeImage]);
 
+  // bookmark + add-to-cart reveal (fade only, no growing) — same pattern as
+  // the quote card's icon reveal
+  useEffect(() => {
+    // a bookmarked item stays visible even once the mouse leaves
+    const bookmarkVisible = showChrome || isBookmarked;
+    gsap.to(bookmarkBtnRef.current, {
+      opacity: bookmarkVisible ? 1 : 0,
+      duration: bookmarkVisible ? 0.28 : 0.16,
+      ease: "power2.out",
+      pointerEvents: bookmarkVisible ? "auto" : "none",
+    });
+    gsap.to(cartBtnRef.current, {
+      opacity: showChrome ? 1 : 0,
+      duration: showChrome ? 0.28 : 0.16,
+      ease: "power2.out",
+      pointerEvents: showChrome ? "auto" : "none",
+    });
+  }, [showChrome, isBookmarked]);
+
   // bottom bar hover pill (disabled once expanded, popover takes over)
   const handleBottomEnter = () => {
     if (isExpanded) return;
@@ -184,6 +218,23 @@ export default function ProductCardGallery() {
     };
   }, [isExpanded]);
 
+  const toggleBookmark = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const next = !isBookmarked;
+    setIsBookmarked(next);
+    gsap.to(bookmarkBtnRef.current, {
+      backgroundColor: next ? "#e90029" : "#ffffff",
+      color: next ? "#ffffff" : "#373a36",
+      duration: 0.3,
+      ease: "power2.out",
+    });
+    gsap.fromTo(
+      bookmarkIconRef.current,
+      { scale: 0.6, rotate: -8 },
+      { scale: 1, rotate: 0, duration: 0.5, ease: "elastic.out(1, 0.5)" }
+    );
+  };
+
   return (
     <div
       ref={cardRef}
@@ -237,6 +288,16 @@ export default function ProductCardGallery() {
               ))}
             </div>
           </div>
+
+          <button
+            ref={cartBtnRef}
+            type="button"
+            className={styles.cartButton}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Add to cart"
+          >
+            <CartCirclePlusIcon size={25} />
+          </button>
         </div>
 
         <div className={styles.infoBlock}>
@@ -338,6 +399,19 @@ export default function ProductCardGallery() {
           )}
         </div>
       </div>
+
+      <button
+        ref={bookmarkBtnRef}
+        type="button"
+        className={`${styles.iconButton} ${styles.iconButtonBookmark}`}
+        onClick={toggleBookmark}
+        aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
+        aria-pressed={isBookmarked}
+      >
+        <span ref={bookmarkIconRef} style={{ display: "flex" }}>
+          {isBookmarked ? <BookmarkIcon size={16} /> : <BookmarkOutlineIcon size={16} />}
+        </span>
+      </button>
     </div>
   );
 }

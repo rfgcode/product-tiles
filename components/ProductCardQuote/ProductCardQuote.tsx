@@ -31,6 +31,8 @@ export default function ProductCardQuote({
   const bookmarkBtnRef = useRef<HTMLButtonElement>(null);
   const bookmarkIconRef = useRef<HTMLSpanElement>(null);
   const zoomWrapRef = useRef<HTMLDivElement>(null);
+  const imageFrontRef = useRef<HTMLImageElement>(null);
+  const imageBackRef = useRef<HTMLImageElement>(null);
   const quoteBarRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -68,18 +70,14 @@ export default function ProductCardQuote({
 
   // safety net: a fast cursor exit (or leaving the window/tab) can skip the
   // card's own mouseleave — this double-checks real cursor position on every
-  // document-wide mousemove while hovered, so the state can never get stuck
+  // document-wide mousemove while hovered, so the state can never get stuck.
+  // Containment (not a geometric rect check) so it still counts as "inside"
+  // over the quote bar, which is a DOM child of the card but is positioned
+  // outside the card's own layout box and so falls outside its bounding rect.
   useEffect(() => {
     if (!isHovered) return;
     const checkCursor = (e: MouseEvent) => {
-      const rect = cardRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const inside =
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom;
-      if (!inside) setIsHovered(false);
+      if (!cardRef.current?.contains(e.target as Node)) setIsHovered(false);
     };
     const handleWindowLeave = () => setIsHovered(false);
     document.addEventListener("mousemove", checkCursor);
@@ -90,14 +88,16 @@ export default function ProductCardQuote({
     };
   }, [isHovered]);
 
-  // default (only) image behavior for this variant: a slight, smooth zoom.
-  // No secondary image and no gallery — hover anywhere on the tile zooms it.
+  // whole-card zoom on hover, plus an instant front/back photo swap
+  // (matching the basic tile's second-image-on-hover behavior)
   useEffect(() => {
     gsap.to(zoomWrapRef.current, {
       scale: isHovered ? 1.06 : 1,
       duration: 0.5,
       ease: "power2.out",
     });
+    gsap.set(imageFrontRef.current, { opacity: isHovered ? 0 : 1 });
+    gsap.set(imageBackRef.current, { opacity: isHovered ? 1 : 0 });
   }, [isHovered]);
 
   // "Request a quote" drops down as a floating overlay below the card (see
@@ -233,8 +233,15 @@ export default function ProductCardQuote({
           <div className={styles.imageInner}>
             <div ref={zoomWrapRef} className={styles.imageZoomWrap}>
               <img
+                ref={imageFrontRef}
                 src="/images/product-default-opt.jpg"
                 alt="UXA Signal Analyzer, front view"
+              />
+              <img
+                ref={imageBackRef}
+                className={styles.imageBack}
+                src="/images/product-hover-opt.jpg"
+                alt="UXA Signal Analyzer, rear view"
               />
             </div>
             <div className={styles.imageOverlay} />

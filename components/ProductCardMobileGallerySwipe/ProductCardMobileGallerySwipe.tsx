@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import styles from "./ProductCardMobileExpand.module.css";
+import styles from "./ProductCardMobileGallerySwipe.module.css";
 import {
   BadgeCheckIcon,
   ChevronIcon,
@@ -11,11 +11,28 @@ import {
   SquareSlidersIcon,
 } from "../icons";
 
-export default function ProductCardMobileExpand() {
+// Same four product photos as the tap-driven mobile gallery — here a
+// horizontal swipe across the image advances/retreats through them instead
+// of a tap, wrapping at both ends.
+const GALLERY_IMAGES = [
+  { src: "/images/gallery/gallery-front.jpg", alt: "UXA Signal Analyzer, front view" },
+  { src: "/images/gallery/gallery-front-panel.jpg", alt: "UXA Signal Analyzer, front panel" },
+  { src: "/images/gallery/gallery-back.jpg", alt: "UXA Signal Analyzer, rear view" },
+  { src: "/images/gallery/gallery-side.jpg", alt: "UXA Signal Analyzer, side view" },
+];
+
+// how far (in px) a drag has to travel before it counts as a swipe rather
+// than an accidental wobble/tap
+const SWIPE_THRESHOLD = 30;
+
+export default function ProductCardMobileGallerySwipe() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const shadowRef = useRef<HTMLDivElement>(null);
+  const imageInnerRef = useRef<HTMLDivElement>(null);
+  const swipeStartXRef = useRef<number | null>(null);
 
   // the card lifts with a drop shadow while the details panel is open
   useEffect(() => {
@@ -68,18 +85,72 @@ export default function ProductCardMobileExpand() {
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [isExpanded]);
 
+  // swipe across the image: a horizontal drag past the threshold advances
+  // or retreats through the gallery, with a short directional nudge on the
+  // photo itself so the swipe reads as registered
+  const handleImageSwipeStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    swipeStartXRef.current = e.clientX;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handleImageSwipeEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const startX = swipeStartXRef.current;
+    swipeStartXRef.current = null;
+    if (startX === null) return;
+
+    const deltaX = e.clientX - startX;
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
+
+    if (deltaX < 0) {
+      setActiveImage((prev) => (prev + 1) % GALLERY_IMAGES.length);
+      gsap.fromTo(imageInnerRef.current, { x: 10 }, { x: 0, duration: 0.3, ease: "power2.out" });
+    } else {
+      setActiveImage(
+        (prev) => (prev - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length
+      );
+      gsap.fromTo(imageInnerRef.current, { x: -10 }, { x: 0, duration: 0.3, ease: "power2.out" });
+    }
+  };
+
+  const handleImageSwipeCancel = () => {
+    swipeStartXRef.current = null;
+  };
+
   return (
     <div className={styles.card}>
       <div ref={shadowRef} className={styles.shadowLayer} />
 
       <div className={styles.cardClip}>
-        <div className={styles.imageWrap}>
-          <div className={styles.imageInner}>
-            <img
-              src="/images/product-default-opt.jpg"
-              alt="UXA Signal Analyzer, front view"
-            />
+        <div
+          className={styles.imageWrap}
+          role="group"
+          aria-label="Product image gallery, swipe to browse"
+          onPointerDown={handleImageSwipeStart}
+          onPointerUp={handleImageSwipeEnd}
+          onPointerCancel={handleImageSwipeCancel}
+        >
+          <div ref={imageInnerRef} className={styles.imageInner}>
+            {GALLERY_IMAGES.map((image, i) => (
+              <img
+                key={image.src}
+                className={`${styles.galleryImage} ${
+                  i === activeImage ? styles.galleryImageActive : ""
+                }`}
+                src={image.src}
+                alt={image.alt}
+              />
+            ))}
             <div className={styles.imageOverlay} />
+            <div className={styles.galleryDots}>
+              {GALLERY_IMAGES.map((image, i) => (
+                <span
+                  key={image.src}
+                  className={`${styles.galleryDot} ${
+                    i === activeImage ? styles.galleryDotActive : ""
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -120,11 +191,7 @@ export default function ProductCardMobileExpand() {
         </div>
 
         {renderPanel && (
-          <div
-            ref={panelRef}
-            className={styles.panel}
-            onClick={() => setIsExpanded(false)}
-          >
+          <div ref={panelRef} className={styles.panel}>
             <button
               type="button"
               className={styles.panelClose}

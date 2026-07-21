@@ -4,9 +4,11 @@ import { useState } from "react";
 import ProductCard from "../components/ProductCard/ProductCard";
 import ProductCardGallery from "../components/ProductCardGallery/ProductCardGallery";
 import ProductCardQuote from "../components/ProductCardQuote/ProductCardQuote";
+import ProductCardQuickAction from "../components/ProductCardQuickAction/ProductCardQuickAction";
 import ProductCardMobile from "../components/ProductCardMobile/ProductCardMobile";
 import ProductCardMobileExpand from "../components/ProductCardMobileExpand/ProductCardMobileExpand";
 import ProductCardMobileGallery from "../components/ProductCardMobileGallery/ProductCardMobileGallery";
+import ProductCardMobileGallerySwipe from "../components/ProductCardMobileGallerySwipe/ProductCardMobileGallerySwipe";
 import ProductModal from "../components/ProductModal/ProductModal";
 import CardTabs, { TabDef } from "../components/CardTabs/CardTabs";
 
@@ -15,16 +17,23 @@ import CardTabs, { TabDef } from "../components/CardTabs/CardTabs";
 const TABS: TabDef[] = [
   { id: "default", label: "Basic" },
   { id: "gallery", label: "Gallery" },
-  { id: "quote", label: "Quote CTA" },
-  { id: "mobile", label: "Mobile" },
+  { id: "quote", label: "Quote" },
+  { id: "quick-action", label: "Quick Action" },
+  { id: "mobile", label: "Mobile Basic" },
   { id: "mobile-expand", label: "Mobile Expand" },
   { id: "mobile-gallery", label: "Mobile Gallery" },
+  { id: "mobile-gallery-swipe", label: "Mobile Gallery Swipe" },
 ];
 
 // mobile variants show a 2x2 grid (4 instances, 10px gap); desktop variants
 // show a 3x2 grid (6 instances, a slightly larger gap) to make it easier to
 // judge the tiles side by side
-const MOBILE_TABS = new Set(["mobile", "mobile-expand", "mobile-gallery"]);
+const MOBILE_TABS = new Set([
+  "mobile",
+  "mobile-expand",
+  "mobile-gallery",
+  "mobile-gallery-swipe",
+]);
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,17 +44,21 @@ export default function Home() {
   const renderCard = (key: number) => {
     switch (activeTab) {
       case "default":
-        return <ProductCard key={key} onOpenDetails={openDetails} />;
+        return <ProductCard key={key} />;
       case "gallery":
-        return <ProductCardGallery key={key} onOpenDetails={openDetails} />;
+        return <ProductCardGallery key={key} />;
       case "quote":
         return <ProductCardQuote key={key} onOpenDetails={openDetails} />;
+      case "quick-action":
+        return <ProductCardQuickAction key={key} />;
       case "mobile":
         return <ProductCardMobile key={key} />;
       case "mobile-expand":
         return <ProductCardMobileExpand key={key} />;
       case "mobile-gallery":
         return <ProductCardMobileGallery key={key} />;
+      case "mobile-gallery-swipe":
+        return <ProductCardMobileGallerySwipe key={key} />;
       default:
         return null;
     }
