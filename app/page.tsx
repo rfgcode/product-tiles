@@ -16,10 +16,10 @@ import CardTabs, { TabDef } from "../components/CardTabs/CardTabs";
 // Add a new entry here (and a matching case in the render switch below) to
 // grow past today's variants — the dropdown itself needs no changes.
 const TABS: TabDef[] = [
-  { id: "default", label: "Basic" },
-  { id: "gallery", label: "Gallery" },
-  { id: "quote", label: "Quote" },
-  { id: "quick-action", label: "Quick Action" },
+  { id: "default", label: "Desktop Basic" },
+  { id: "gallery", label: "Desktop Gallery" },
+  { id: "quote", label: "Desktop Quote" },
+  { id: "quick-action", label: "Desktop Quick Action" },
   { id: "mobile", label: "Mobile Basic" },
   { id: "mobile-expand", label: "Mobile Expand" },
   { id: "mobile-gallery", label: "Mobile Gallery" },
