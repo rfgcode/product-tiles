@@ -105,6 +105,19 @@
   transform: scale(1.3);
 }
 
+/* Keysight Premium Used seal, centered over the lower portion of the
+   product photo — shown on alternating tiles per the Figma spec */
+.premiumBadge {
+  position: absolute;
+  left: 50%;
+  bottom: 16.5px;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 56px;
+  z-index: 1;
+  pointer-events: none;
+}
+
 /* --- product info text blocks --- */
 .infoBlock {
   display: flex;
@@ -123,7 +136,7 @@
 
 .modelNumber {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.5;
   color: var(--color-black);
 }
@@ -137,19 +150,14 @@
 
 .options {
   width: 100%;
-}
-
-.options ul {
-  list-style: disc;
-  list-style-position: inside;
-  padding-left: 0;
-  margin: 0;
-}
-
-.options li {
   font-size: 13px;
   line-height: 1.5;
-  color: var(--color-dark-gray);
+  font-weight: 400;
+  color: var(--color-custom-gray);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* --- price --- */
@@ -174,7 +182,7 @@
 
 .promoBadge span {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.22px;
   text-transform: uppercase;
   color: var(--color-custom-gray);
@@ -188,13 +196,13 @@
 
 .currentPrice {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-black);
 }
 
 .discount {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-keysight-red);
 }
 

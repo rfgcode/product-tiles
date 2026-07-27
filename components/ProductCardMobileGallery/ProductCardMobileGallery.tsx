@@ -20,7 +20,11 @@ const GALLERY_IMAGES = [
   { src: "/images/gallery/gallery-side.jpg", alt: "UXA Signal Analyzer, side view" },
 ];
 
-export default function ProductCardMobileGallery() {
+export default function ProductCardMobileGallery({
+  showPremiumBadge = false,
+}: {
+  showPremiumBadge?: boolean;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
@@ -115,6 +119,13 @@ export default function ProductCardMobileGallery() {
                 />
               ))}
             </div>
+            {showPremiumBadge && (
+              <img
+                className={styles.premiumBadge}
+                src="/images/keysight-premium-used-badge.png"
+                alt="Keysight Premium Used"
+              />
+            )}
           </div>
         </button>
 

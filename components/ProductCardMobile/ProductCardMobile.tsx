@@ -5,7 +5,11 @@ import gsap from "gsap";
 import styles from "./ProductCardMobile.module.css";
 import { BookmarkIcon, BookmarkOutlineIcon, ListCheckIcon } from "../icons";
 
-export default function ProductCardMobile() {
+export default function ProductCardMobile({
+  showPremiumBadge = false,
+}: {
+  showPremiumBadge?: boolean;
+}) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const bookmarkBtnRef = useRef<HTMLButtonElement>(null);
   const bookmarkIconRef = useRef<HTMLSpanElement>(null);
@@ -37,6 +41,13 @@ export default function ProductCardMobile() {
               alt="UXA Signal Analyzer, front view"
             />
             <div className={styles.imageOverlay} />
+            {showPremiumBadge && (
+              <img
+                className={styles.premiumBadge}
+                src="/images/keysight-premium-used-badge.png"
+                alt="Keysight Premium Used"
+              />
+            )}
           </div>
         </div>
 

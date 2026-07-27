@@ -25,7 +25,11 @@ const GALLERY_IMAGES = [
 // than an accidental wobble/tap
 const SWIPE_THRESHOLD = 30;
 
-export default function ProductCardMobileGallerySwipe() {
+export default function ProductCardMobileGallerySwipe({
+  showPremiumBadge = false,
+}: {
+  showPremiumBadge?: boolean;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
@@ -151,6 +155,13 @@ export default function ProductCardMobileGallerySwipe() {
                 />
               ))}
             </div>
+            {showPremiumBadge && (
+              <img
+                className={styles.premiumBadge}
+                src="/images/keysight-premium-used-badge.png"
+                alt="Keysight Premium Used"
+              />
+            )}
           </div>
         </div>
 

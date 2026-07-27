@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCard.module.css";
 
-export default function ProductCard() {
+export default function ProductCard({
+  showPremiumBadge = false,
+}: {
+  showPremiumBadge?: boolean;
+}) {
   const [isHovered, setIsHovered] = useState(false);
 
   const shadowRef = useRef<HTMLDivElement>(null);
@@ -80,6 +84,13 @@ export default function ProductCard() {
               alt="UXA Signal Analyzer, rear view"
             />
             <div className={styles.imageOverlay} />
+            {showPremiumBadge && (
+              <img
+                className={styles.premiumBadge}
+                src="/images/keysight-premium-used-badge.png"
+                alt="Keysight Premium Used"
+              />
+            )}
           </div>
         </div>
 
@@ -90,13 +101,11 @@ export default function ProductCard() {
               UXA Signal Analyzer Multi-touch / 2 Hz to 26.5 GHz
             </p>
           </div>
-          <div className={styles.options}>
-            <ul>
-              <li>14 GHz specified</li>
-              <li>13 GHz typical</li>
-              <li>Dynamic Range: 3.3 V peak-to-peak</li>
-            </ul>
-          </div>
+          <p className={styles.options}>
+            Options: 550 / B2X / CR3 / DP2 / DP4 / EDP / EPO / EXM / FBP / FP2
+            / FS1 / FS2 / FSA / FT2 / H1G / LFE / LNP / MPB / MTU / NF2 / NUL
+            / P50 /...
+          </p>
         </div>
 
         <div className={styles.priceBlock}>

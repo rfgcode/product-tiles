@@ -3,7 +3,10 @@
    bar reveals a full-width details panel (unlike the desktop cards' inset
    floating popover) that overlays the price block and the tail of the
    description; a floating circular chevron closes it again. The card picks
-   up a drop shadow while that panel is open, to read as raised/elevated. */
+   up a drop shadow while that panel is open, to read as raised/elevated.
+   This variant additionally gains a quick-view eye button (top-left) that
+   opens a full-width bottom-sheet modal, matching the desktop quote card's
+   info-button-opens-a-modal pattern. */
 .card {
   position: relative;
   width: 176.5px;
@@ -62,7 +65,7 @@
   pointer-events: none;
 }
 
-/* Keysight Premium Used seal, centered and flush with the bottom edge of
+/* Keysight Premium Used seal, centered and clearing the bottom edge of
    the product photo — shown on alternating tiles per the Figma spec */
 .imageInner .premiumBadge {
   position: absolute;
@@ -72,6 +75,217 @@
   height: 40px;
   object-fit: contain;
   pointer-events: none;
+}
+
+/* --- quick view: eye button, top-left (mirrors the bookmark button's
+   top-right placement used on the other mobile variants) --- */
+.quickViewButton {
+  position: absolute;
+  top: 13.88px;
+  left: 13.5px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-dark-gray);
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
+}
+
+.quickViewButton:hover {
+  background: var(--color-extra-light-gray);
+}
+
+/* --- quick view modal: full-viewport dark overlay + bottom sheet --- */
+.quickViewOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.64);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.quickViewSheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: var(--color-white);
+  border-radius: 8px 8px 0 0;
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewCloseButton {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-black);
+}
+
+.quickViewSummary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-light-gray);
+}
+
+.quickViewThumb {
+  width: 80px;
+  height: 55px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.quickViewSummaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quickViewModel {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewPrice {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewActions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.quickViewQuoteButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-keysight-red);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewDetailsButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--color-keysight-red);
+  background: none;
+  color: var(--color-keysight-red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewAccordionList {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewAccordion {
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewAccordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 16px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-black);
+}
+
+.quickViewAccordionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* animated wrapper: height is tweened between 0 and "auto" in JS, so this
+   must carry no padding of its own — otherwise a collapsed section would
+   still show a sliver of padding. overflow:hidden clips mid-animation. */
+.quickViewAccordionContent {
+  overflow: hidden;
+}
+
+.quickViewAccordionContentInner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.quickViewAccordionContentHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.quickViewOptionRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+  padding-top: 12px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewOptionRow:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.quickViewOptionCode {
+  font-weight: 600;
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.quickViewOptionLabel {
+  flex: 1;
+  min-width: 0;
 }
 
 /* --- product info text blocks --- */

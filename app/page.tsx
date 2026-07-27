@@ -9,6 +9,7 @@ import ProductCardMobile from "../components/ProductCardMobile/ProductCardMobile
 import ProductCardMobileExpand from "../components/ProductCardMobileExpand/ProductCardMobileExpand";
 import ProductCardMobileGallery from "../components/ProductCardMobileGallery/ProductCardMobileGallery";
 import ProductCardMobileGallerySwipe from "../components/ProductCardMobileGallerySwipe/ProductCardMobileGallerySwipe";
+import ProductCardMobileQuickView from "../components/ProductCardMobileQuickView/ProductCardMobileQuickView";
 import ProductModal from "../components/ProductModal/ProductModal";
 import CardTabs, { TabDef } from "../components/CardTabs/CardTabs";
 
@@ -23,6 +24,7 @@ const TABS: TabDef[] = [
   { id: "mobile-expand", label: "Mobile Expand" },
   { id: "mobile-gallery", label: "Mobile Gallery" },
   { id: "mobile-gallery-swipe", label: "Mobile Gallery Swipe" },
+  { id: "mobile-quick-view", label: "Mobile Quick View" },
 ];
 
 // mobile variants show a 2x2 grid (4 instances, 10px gap); desktop variants
@@ -33,6 +35,7 @@ const MOBILE_TABS = new Set([
   "mobile-expand",
   "mobile-gallery",
   "mobile-gallery-swipe",
+  "mobile-quick-view",
 ]);
 
 export default function Home() {
@@ -42,23 +45,64 @@ export default function Home() {
   const openDetails = () => setModalOpen(true);
 
   const renderCard = (key: number) => {
+    // every other tile (half of the grid) carries the Keysight Premium
+    // Used seal over the product photo, per the Figma spec
+    const showPremiumBadge = key % 2 === 1;
+
     switch (activeTab) {
       case "default":
-        return <ProductCard key={key} />;
+        return <ProductCard key={key} showPremiumBadge={showPremiumBadge} />;
       case "gallery":
-        return <ProductCardGallery key={key} />;
+        return (
+          <ProductCardGallery key={key} showPremiumBadge={showPremiumBadge} />
+        );
       case "quote":
-        return <ProductCardQuote key={key} onOpenDetails={openDetails} />;
+        return (
+          <ProductCardQuote
+            key={key}
+            onOpenDetails={openDetails}
+            showPremiumBadge={showPremiumBadge}
+          />
+        );
       case "quick-action":
-        return <ProductCardQuickAction key={key} />;
+        return (
+          <ProductCardQuickAction
+            key={key}
+            showPremiumBadge={showPremiumBadge}
+          />
+        );
       case "mobile":
-        return <ProductCardMobile key={key} />;
+        return (
+          <ProductCardMobile key={key} showPremiumBadge={showPremiumBadge} />
+        );
       case "mobile-expand":
-        return <ProductCardMobileExpand key={key} />;
+        return (
+          <ProductCardMobileExpand
+            key={key}
+            showPremiumBadge={showPremiumBadge}
+          />
+        );
       case "mobile-gallery":
-        return <ProductCardMobileGallery key={key} />;
+        return (
+          <ProductCardMobileGallery
+            key={key}
+            showPremiumBadge={showPremiumBadge}
+          />
+        );
       case "mobile-gallery-swipe":
-        return <ProductCardMobileGallerySwipe key={key} />;
+        return (
+          <ProductCardMobileGallerySwipe
+            key={key}
+            showPremiumBadge={showPremiumBadge}
+          />
+        );
+      case "mobile-quick-view":
+        return (
+          <ProductCardMobileQuickView
+            key={key}
+            showPremiumBadge={showPremiumBadge}
+          />
+        );
       default:
         return null;
     }

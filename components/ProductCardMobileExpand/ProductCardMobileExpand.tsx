@@ -11,7 +11,11 @@ import {
   SquareSlidersIcon,
 } from "../icons";
 
-export default function ProductCardMobileExpand() {
+export default function ProductCardMobileExpand({
+  showPremiumBadge = false,
+}: {
+  showPremiumBadge?: boolean;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -80,6 +84,13 @@ export default function ProductCardMobileExpand() {
               alt="UXA Signal Analyzer, front view"
             />
             <div className={styles.imageOverlay} />
+            {showPremiumBadge && (
+              <img
+                className={styles.premiumBadge}
+                src="/images/keysight-premium-used-badge.png"
+                alt="Keysight Premium Used"
+              />
+            )}
           </div>
         </div>
 

@@ -76,7 +76,7 @@
 .title h2 {
   margin: 0;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-black);
 }
 
@@ -87,7 +87,7 @@
 
 .price {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-black);
 }
 
@@ -102,7 +102,7 @@
   border-radius: 20px;
   padding: 4px 12px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -142,7 +142,7 @@
   cursor: pointer;
   color: var(--color-black);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .topicActive {
@@ -180,7 +180,7 @@
 
 .sectionHeading p {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-black);
 }
 
@@ -206,7 +206,7 @@
 }
 
 .optionCode {
-  font-weight: 500;
+  font-weight: 600;
   width: 80px;
   flex-shrink: 0;
 }
@@ -227,7 +227,7 @@
 
 .addableRow p {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-black);
 }
 
