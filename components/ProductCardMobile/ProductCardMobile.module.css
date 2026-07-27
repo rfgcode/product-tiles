@@ -126,7 +126,7 @@
 .priceBlock {
   display: flex;
   flex-direction: column;
-  gap: 3.375px;
+  gap: 2px;
   align-items: flex-start;
   width: 100%;
   padding: 9.75px 8px;

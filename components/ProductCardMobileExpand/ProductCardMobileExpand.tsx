@@ -3,13 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardMobileExpand.module.css";
-import {
-  BadgeCheckIcon,
-  ChevronIcon,
-  ListCheckIcon,
-  PlugCircleCheckIcon,
-  SquareSlidersIcon,
-} from "../icons";
+import { ChevronIcon, ListCheckIcon } from "../icons";
 
 export default function ProductCardMobileExpand({
   showPremiumBadge = false,
@@ -145,30 +139,12 @@ export default function ProductCardMobileExpand({
               <ChevronIcon size={12} style={{ transform: "rotate(180deg)" }} />
             </button>
 
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
-                <ListCheckIcon size={16} />
-              </span>
-              <p className={styles.panelLabel}>Refurbished, like-new</p>
-            </div>
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
-                <BadgeCheckIcon size={16} />
-              </span>
-              <p className={styles.panelLabel}>Like-new warranty</p>
-            </div>
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
-                <PlugCircleCheckIcon size={18} />
-              </span>
-              <p className={styles.panelLabel}>Accessories included</p>
-            </div>
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
-                <SquareSlidersIcon size={16} />
-              </span>
-              <p className={styles.panelLabel}>Customizable</p>
-            </div>
+            <ul className={styles.panelList}>
+              <li className={styles.panelItem}>Refurbished, like-new</li>
+              <li className={styles.panelItem}>Like-new warranty</li>
+              <li className={styles.panelItem}>Accessories included</li>
+              <li className={styles.panelItem}>Customizable</li>
+            </ul>
           </div>
         )}
       </div>
