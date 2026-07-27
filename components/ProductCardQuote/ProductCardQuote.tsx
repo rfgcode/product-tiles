@@ -250,7 +250,7 @@ export default function ProductCardQuote({
             {showPremiumBadge && (
               <img
                 className={styles.premiumBadge}
-                src="/images/keysight-premium-used-badge.png"
+                src="/images/keysight-premium-used-badge.svg"
                 alt="Keysight Premium Used"
               />
             )}
