@@ -10,6 +10,7 @@ import ProductCardMobileExpand from "../components/ProductCardMobileExpand/Produ
 import ProductCardMobileGallery from "../components/ProductCardMobileGallery/ProductCardMobileGallery";
 import ProductCardMobileGallerySwipe from "../components/ProductCardMobileGallerySwipe/ProductCardMobileGallerySwipe";
 import ProductCardMobileQuickView from "../components/ProductCardMobileQuickView/ProductCardMobileQuickView";
+import ProductCardMobileLandscape from "../components/ProductCardMobileLandscape/ProductCardMobileLandscape";
 import ProductModal from "../components/ProductModal/ProductModal";
 import CardTabs, { TabDef } from "../components/CardTabs/CardTabs";
 
@@ -25,6 +26,7 @@ const TABS: TabDef[] = [
   { id: "mobile-gallery", label: "Mobile Gallery" },
   { id: "mobile-gallery-swipe", label: "Mobile Gallery Swipe" },
   { id: "mobile-quick-view", label: "Mobile Quick View" },
+  { id: "mobile-landscape", label: "Mobile Landscape" },
 ];
 
 // mobile variants show a 2x2 grid (4 instances, 10px gap); desktop variants
@@ -37,6 +39,11 @@ const MOBILE_TABS = new Set([
   "mobile-gallery-swipe",
   "mobile-quick-view",
 ]);
+
+// the landscape tail variant is as wide as two portrait tiles plus their
+// gap, so it stacks four to a page in a single column instead of the 2x2
+// grid the other mobile variants use
+const STACKED_TABS = new Set(["mobile-landscape"]);
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -103,15 +110,23 @@ export default function Home() {
             showPremiumBadge={showPremiumBadge}
           />
         );
+      case "mobile-landscape":
+        return (
+          <ProductCardMobileLandscape
+            key={key}
+            showPremiumBadge={showPremiumBadge}
+          />
+        );
       default:
         return null;
     }
   };
 
   const isMobile = MOBILE_TABS.has(activeTab);
-  const columns = isMobile ? 2 : 3;
-  const rows = 2;
-  const gap = isMobile ? 10 : 16;
+  const isStacked = STACKED_TABS.has(activeTab);
+  const columns = isStacked ? 1 : isMobile ? 2 : 3;
+  const rows = isStacked ? 4 : 2;
+  const gap = isMobile || isStacked ? 10 : 16;
 
   return (
     <main

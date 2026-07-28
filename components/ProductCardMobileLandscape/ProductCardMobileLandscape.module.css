@@ -1,0 +1,491 @@
+/* Mobile / landscape tail variant matched to Figma frame 8082:64377
+   (361 x 171.375px pre-rearrangement): the exact same elements as the
+   mobile quick-view card (info button opening a full-screen sheet, an
+   expandable feature bar) — just rearranged side-by-side, image on the
+   left and name/price stacked on the right, inside a tile sized to match
+   two portrait tiles plus their gap (176.5px * 2 + 10px gap = 363px).
+   Meant to be stacked four to a page instead of the 2x2 grid the other
+   mobile variants use. */
+.card {
+  position: relative;
+  width: 363px;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
+}
+
+/* sits on .card (not .cardClip) so the shadow isn't clipped by the
+   cardClip's overflow:hidden, matching the other cards' pattern */
+.shadowLayer {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cardClip {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- top row: image on the left, name/price stacked on the right --- */
+.topRow {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.imageCol {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* justify-end bottom-aligns the name/price content against the image's
+   bottom edge, matching the Figma spec */
+.infoCol {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+/* --- image --- */
+.imageWrap {
+  padding: 8px;
+  width: 100%;
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 284 / 213;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.imageInner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* subtle dark tint over the product photo, matched to the Figma spec */
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+/* Keysight Premium Used seal, centered and flush with the bottom edge of
+   the product photo — shown on alternating tiles per the Figma spec */
+.imageInner .premiumBadge {
+  position: absolute;
+  inset: auto auto 4px 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* --- quick view: eye/info button, top-left of the image (mirrors the
+   other mobile variants' info/bookmark button placement) --- */
+.quickViewButton {
+  position: absolute;
+  top: 13.88px;
+  left: 13.5px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-dark-gray);
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
+}
+
+.quickViewButton:hover {
+  background: var(--color-extra-light-gray);
+}
+
+/* --- quick view modal: full-viewport dark overlay + bottom sheet, same
+   as the other quick-view variant --- */
+.quickViewOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.64);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.quickViewSheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: var(--color-white);
+  border-radius: 8px 8px 0 0;
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewCloseButton {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-black);
+}
+
+.quickViewSummary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-light-gray);
+}
+
+.quickViewThumb {
+  width: 80px;
+  height: 55px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.quickViewSummaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quickViewModel {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewPrice {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewActions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.quickViewQuoteButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-keysight-red);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewDetailsButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--color-keysight-red);
+  background: none;
+  color: var(--color-keysight-red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewAccordionList {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewAccordion {
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewAccordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 16px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-black);
+}
+
+.quickViewAccordionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* animated wrapper: height is tweened between 0 and "auto" in JS, so this
+   must carry no padding of its own — otherwise a collapsed section would
+   still show a sliver of padding. overflow:hidden clips mid-animation. */
+.quickViewAccordionContent {
+  overflow: hidden;
+}
+
+.quickViewAccordionContentInner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.quickViewAccordionContentHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.quickViewOptionRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+  padding-top: 12px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewOptionRow:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.quickViewOptionCode {
+  font-weight: 600;
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.quickViewOptionLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- product info text blocks --- */
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0 8px 6px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modelNumber {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-black);
+}
+
+.description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-black);
+}
+
+/* --- price --- */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3.375px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 9.75px 8px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.fromLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22px;
+  text-transform: uppercase;
+  color: var(--color-custom-gray);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.currentPrice {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.discount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-keysight-red);
+}
+
+/* --- bottom feature bar: spans the full card width beneath both
+   columns, tap to open the full-width details panel --- */
+.featureBar {
+  position: relative;
+  width: 100%;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.featureBarButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.feature {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.featureIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+}
+
+.featureLabel {
+  font-size: 12px;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  flex-shrink: 0;
+}
+
+/* --- details panel: full width of the card and flush with its edges
+   (no inset, no independent border-radius) — the shared .cardClip
+   rounding and overflow:hidden already give it a clean bottom edge,
+   same as the portrait version --- */
+.panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-extra-light-gray);
+  border-top: 1px solid var(--color-light-gray);
+  padding: 15px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4.2px;
+  z-index: 2;
+}
+
+.panelClose {
+  position: absolute;
+  top: -12px;
+  right: 9px;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-black);
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
+}
+
+.panelRow {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  width: 100%;
+}
+
+.panelIcon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  flex-shrink: 0;
+}
+
+.panelLabel {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-black);
+  flex: 1;
+  min-width: 0;
+}
