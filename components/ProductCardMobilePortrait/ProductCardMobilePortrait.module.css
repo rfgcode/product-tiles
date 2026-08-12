@@ -1,9 +1,10 @@
 /* Mobile Portrait (V2), matched to Figma frame 8148:2866 (176.5 x
    318.375px): same content as Desktop Basic (image, name, condition/
    warranty, price) in a single narrow column, sized to sit two-up in the
-   mobile grid like the V1 Mobile Basic tile. No hover states, no info/cart
-   affordances — a static, non-interactive tile per the Figma spec. Condition
-   and warranty use plain disc bullets instead of icons to save space. */
+   mobile grid like the V1 Mobile Basic tile. An info button floats over the
+   image (node 8150:2963) and opens the same mobile quick-view sheet used by
+   the other mobile variants. Condition and warranty use plain disc bullets
+   instead of icons to save space. */
 .card {
   position: relative;
   width: 176.5px;
@@ -48,6 +49,32 @@
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.04);
   pointer-events: none;
+}
+
+/* --- info button: top-left over the image, matching the other mobile
+   variants' affordance placement --- */
+.infoButton {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-dark-gray);
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
+  transition: background-color 0.15s ease;
+}
+
+.infoButton:hover {
+  background: var(--color-extra-light-gray);
 }
 
 /* --- product name + condition/warranty bullets --- */
@@ -146,4 +173,192 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--color-keysight-red);
+}
+
+/* --- quick view modal: full-viewport dark overlay + bottom sheet, same
+   as the other mobile variants (ProductCardMobileBasic,
+   ProductCardMobileLandscape) --- */
+.quickViewOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.64);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.quickViewSheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: var(--color-white);
+  border-radius: 8px 8px 0 0;
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewCloseButton {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-black);
+}
+
+.quickViewSummary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-light-gray);
+}
+
+.quickViewThumb {
+  width: 80px;
+  height: 55px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.quickViewSummaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quickViewModel {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewPrice {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewActions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.quickViewQuoteButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-keysight-red);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewDetailsButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--color-keysight-red);
+  background: none;
+  color: var(--color-keysight-red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewAccordionList {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewAccordion {
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewAccordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 16px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-black);
+}
+
+.quickViewAccordionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* animated wrapper: height is tweened between 0 and "auto" in JS, so this
+   must carry no padding of its own — otherwise a collapsed section would
+   still show a sliver of padding. overflow:hidden clips mid-animation. */
+.quickViewAccordionContent {
+  overflow: hidden;
+}
+
+.quickViewAccordionContentInner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.quickViewAccordionContentHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.quickViewOptionRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+  padding-top: 12px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewOptionRow:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.quickViewOptionCode {
+  font-weight: 600;
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.quickViewOptionLabel {
+  flex: 1;
+  min-width: 0;
 }

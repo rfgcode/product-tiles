@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import styles from "./ProductCardMobilePortrait.module.css";
+import { ChevronIcon, CircleInfoIcon, ListCheckIcon, XmarkIcon } from "../icons";
 
 // Content mirrors the Desktop Basic tile (see ProductCardStatic) — same
 // photos and the same condition/warranty copy, cycled the same way.
@@ -30,12 +33,115 @@ const VARIANTS = [
   },
 ];
 
+// Same quick-view sheet as the other mobile variants (ProductCardMobileBasic,
+// ProductCardMobileLandscape) — the info button opens this instead of the
+// shared desktop ProductModal.
+const ACCORDION_SECTIONS = [
+  "Instrument Options",
+  "Services",
+  "Product Specifications",
+  "Equipment Standard",
+  "Accessories",
+];
+
+const SAMPLE_OPTION_ROWS = [
+  { code: "526", label: "Frequency Range, 2 Hz to 26.5 GHz" },
+  { code: "526", label: "Frequency Range, 2 Hz to 26.5 GHz" },
+  { code: "526", label: "Frequency Range, 2 Hz to 26.5 GHz" },
+];
+
 export default function ProductCardMobilePortrait({
   variant = 0,
 }: {
   variant?: number;
 }) {
   const content = VARIANTS[variant % VARIANTS.length];
+
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [renderQuickView, setRenderQuickView] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const accordionContentRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const prevOpenSectionRef = useRef<string | null>(null);
+
+  // quick view modal: mount immediately on open; on close, animate out
+  // first, then unmount
+  useEffect(() => {
+    if (isQuickViewOpen) {
+      setRenderQuickView(true);
+      return;
+    }
+    if (renderQuickView && overlayRef.current && sheetRef.current) {
+      gsap.to(overlayRef.current, { opacity: 0, duration: 0.22, ease: "power2.in" });
+      gsap.to(sheetRef.current, {
+        y: 24,
+        opacity: 0,
+        duration: 0.22,
+        ease: "power2.in",
+        onComplete: () => setRenderQuickView(false),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isQuickViewOpen]);
+
+  useEffect(() => {
+    if (isQuickViewOpen && renderQuickView && overlayRef.current && sheetRef.current) {
+      gsap.fromTo(
+        overlayRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.25, ease: "power2.out" }
+      );
+      gsap.fromTo(
+        sheetRef.current,
+        { y: 32, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.34, ease: "back.out(1.6)" }
+      );
+    }
+  }, [renderQuickView, isQuickViewOpen]);
+
+  // Escape closes the quick view modal, same as the desktop product modal
+  useEffect(() => {
+    if (!isQuickViewOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsQuickViewOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isQuickViewOpen]);
+
+  // only one accordion section open at a time: opening one slides the
+  // previously open section shut so the sheet stays compact
+  useEffect(() => {
+    const prev = prevOpenSectionRef.current;
+    if (prev && prev !== openSection) {
+      const prevEl = accordionContentRefs.current[prev];
+      if (prevEl) {
+        gsap.to(prevEl, { height: 0, duration: 0.28, ease: "power2.inOut" });
+      }
+    }
+    if (openSection) {
+      const el = accordionContentRefs.current[openSection];
+      if (el) {
+        const targetHeight = el.scrollHeight;
+        gsap.fromTo(
+          el,
+          { height: 0 },
+          {
+            height: targetHeight,
+            duration: 0.28,
+            ease: "power2.inOut",
+            onComplete: () => gsap.set(el, { height: "auto" }),
+          }
+        );
+      }
+    }
+    prevOpenSectionRef.current = openSection;
+  }, [openSection]);
+
+  const toggleSection = (section: string) => {
+    setOpenSection((prev) => (prev === section ? null : section));
+  };
 
   return (
     <div className={styles.card}>
@@ -46,6 +152,18 @@ export default function ProductCardMobilePortrait({
             <div className={styles.imageOverlay} />
           </div>
         </div>
+
+        <button
+          type="button"
+          className={styles.infoButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsQuickViewOpen(true);
+          }}
+          aria-label="View product details"
+        >
+          <CircleInfoIcon size={16} />
+        </button>
 
         <div className={styles.infoBlock}>
           <div className={styles.nameBlock}>
@@ -69,6 +187,97 @@ export default function ProductCardMobilePortrait({
           </div>
         </div>
       </div>
+
+      {renderQuickView && (
+        <div
+          ref={overlayRef}
+          className={styles.quickViewOverlay}
+          onClick={() => setIsQuickViewOpen(false)}
+        >
+          <div
+            ref={sheetRef}
+            className={styles.quickViewSheet}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.quickViewCloseButton}
+              onClick={() => setIsQuickViewOpen(false)}
+              aria-label="Close quick view"
+            >
+              <XmarkIcon size={14} />
+            </button>
+
+            <div className={styles.quickViewSummary}>
+              <img
+                className={styles.quickViewThumb}
+                src={content.image}
+                alt="N9040B-526"
+              />
+              <div className={styles.quickViewSummaryInfo}>
+                <p className={styles.quickViewModel}>N9040B-526</p>
+                <p className={styles.quickViewPrice}>USD 66,634</p>
+                <div className={styles.quickViewActions}>
+                  <button type="button" className={styles.quickViewQuoteButton}>
+                    Request quote
+                  </button>
+                  <button type="button" className={styles.quickViewDetailsButton}>
+                    Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.quickViewAccordionList}>
+              {ACCORDION_SECTIONS.map((section) => {
+                const isOpen = openSection === section;
+                return (
+                  <div key={section} className={styles.quickViewAccordion}>
+                    <button
+                      type="button"
+                      className={styles.quickViewAccordionHeader}
+                      onClick={() => toggleSection(section)}
+                      aria-expanded={isOpen}
+                    >
+                      <span className={styles.quickViewAccordionTitle}>
+                        {section}
+                      </span>
+                      <ChevronIcon
+                        size={14}
+                        style={{ transform: isOpen ? "rotate(0deg)" : "rotate(180deg)" }}
+                      />
+                    </button>
+                    <div
+                      ref={(el) => {
+                        accordionContentRefs.current[section] = el;
+                      }}
+                      className={styles.quickViewAccordionContent}
+                      style={{ height: 0 }}
+                    >
+                      <div className={styles.quickViewAccordionContentInner}>
+                        <div className={styles.quickViewAccordionContentHeader}>
+                          <ListCheckIcon size={16} />
+                          <span>Installed Options</span>
+                        </div>
+                        {SAMPLE_OPTION_ROWS.map((row, i) => (
+                          <div key={i} className={styles.quickViewOptionRow}>
+                            <span className={styles.quickViewOptionCode}>
+                              {row.code}
+                            </span>
+                            <span className={styles.quickViewOptionLabel}>
+                              {row.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
