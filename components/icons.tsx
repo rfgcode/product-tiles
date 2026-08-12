@@ -1,4 +1,4 @@
-import { SVGProps } from "react";
+import { SVGProps, useId } from "react";
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
@@ -173,6 +173,38 @@ export function InfoIcon({ size = 14, ...props }: IconProps) {
       <circle cx="12" cy="12" r="9.25" stroke="currentColor" strokeWidth="1.6" />
       <path d="M12 11v5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       <circle cx="12" cy="7.75" r="1.15" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function WavePulseIcon({ size = 16, ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" {...props}>
+      <path
+        d="M6.5 0C6.775 0 7 0.225 7 0.5V14.5C7 14.775 6.775 15 6.5 15C6.225 15 6 14.775 6 14.5V0.5C6 0.225 6.225 0 6.5 0ZM12.5 2C12.775 2 13 2.225 13 2.5V12.5C13 12.775 12.775 13 12.5 13C12.225 13 12 12.775 12 12.5V2.5C12 2.225 12.225 2 12.5 2ZM3.5 3C3.775 3 4 3.225 4 3.5V11.5C4 11.775 3.775 12 3.5 12C3.225 12 3 11.775 3 11.5V3.5C3 3.225 3.225 3 3.5 3ZM9.5 4C9.775 4 10 4.225 10 4.5V10.5C10 10.775 9.775 11 9.5 11C9.225 11 9 10.775 9 10.5V4.5C9 4.225 9.225 4 9.5 4ZM0.5 6C0.775 6 1 6.225 1 6.5V8.5C1 8.775 0.775 9 0.5 9C0.225 9 0 8.775 0 8.5V6.5C0 6.225 0.225 6 0.5 6ZM15.5 6C15.775 6 16 6.225 16 6.5V8.5C16 8.775 15.775 9 15.5 9C15.225 9 15 8.775 15 8.5V6.5C15 6.225 15.225 6 15.5 6Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+export function CircleCheckIcon({ size = 16, ...props }: IconProps) {
+  // clipPath id is per-instance so multiple icons on one page (e.g. several
+  // grid tiles) don't collide with duplicate DOM ids
+  const clipId = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" {...props}>
+      <g clipPath={`url(#${clipId})`}>
+        <path
+          d="M8 1C9.85652 1 11.637 1.7375 12.9497 3.05025C14.2625 4.36301 15 6.14348 15 8C15 9.85652 14.2625 11.637 12.9497 12.9497C11.637 14.2625 9.85652 15 8 15C6.14348 15 4.36301 14.2625 3.05025 12.9497C1.7375 11.637 1 9.85652 1 8C1 6.14348 1.7375 4.36301 3.05025 3.05025C4.36301 1.7375 6.14348 1 8 1ZM8 16C10.1217 16 12.1566 15.1571 13.6569 13.6569C15.1571 12.1566 16 10.1217 16 8C16 5.87827 15.1571 3.84344 13.6569 2.34315C12.1566 0.842855 10.1217 0 8 0C5.87827 0 3.84344 0.842855 2.34315 2.34315C0.842855 3.84344 0 5.87827 0 8C0 10.1217 0.842855 12.1566 2.34315 13.6569C3.84344 15.1571 5.87827 16 8 16ZM11.3531 6.35313C11.5469 6.15938 11.5469 5.84062 11.3531 5.64687C11.1594 5.45312 10.8406 5.45312 10.6469 5.64687L7 9.29375L5.35313 7.64687C5.15938 7.45312 4.84062 7.45312 4.64687 7.64687C4.45312 7.84062 4.45312 8.15937 4.64687 8.35312L6.64687 10.3531C6.84062 10.5469 7.15938 10.5469 7.35313 10.3531L11.3531 6.35313Z"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id={clipId}>
+          <rect width="16" height="16" fill="white" />
+        </clipPath>
+      </defs>
     </svg>
   );
 }

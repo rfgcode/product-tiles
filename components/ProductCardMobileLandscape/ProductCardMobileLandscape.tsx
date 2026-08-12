@@ -187,7 +187,7 @@ export default function ProductCardMobileLandscape({
             <div className={styles.imageWrap}>
               <div className={styles.imageInner}>
                 <img
-                  src="/images/product-default-opt.jpg"
+                  src="/images/product-refurbished-front-opt.jpg"
                   alt="UXA Signal Analyzer, front view"
                 />
                 <div className={styles.imageOverlay} />
@@ -319,7 +319,7 @@ export default function ProductCardMobileLandscape({
             <div className={styles.quickViewSummary}>
               <img
                 className={styles.quickViewThumb}
-                src="/images/product-default-opt.jpg"
+                src="/images/product-refurbished-front-opt.jpg"
                 alt="N9040B-526"
               />
               <div className={styles.quickViewSummaryInfo}>

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard/ProductCard";
+import ProductCardStatic from "../components/ProductCardStatic/ProductCardStatic";
 import ProductCardGallery from "../components/ProductCardGallery/ProductCardGallery";
+import ProductCardGalleryClick from "../components/ProductCardGalleryClick/ProductCardGalleryClick";
 import ProductCardQuote from "../components/ProductCardQuote/ProductCardQuote";
 import ProductCardQuickAction from "../components/ProductCardQuickAction/ProductCardQuickAction";
 import ProductCardMobile from "../components/ProductCardMobile/ProductCardMobile";
@@ -11,12 +13,17 @@ import ProductCardMobileGallery from "../components/ProductCardMobileGallery/Pro
 import ProductCardMobileGallerySwipe from "../components/ProductCardMobileGallerySwipe/ProductCardMobileGallerySwipe";
 import ProductCardMobileQuickView from "../components/ProductCardMobileQuickView/ProductCardMobileQuickView";
 import ProductCardMobileLandscape from "../components/ProductCardMobileLandscape/ProductCardMobileLandscape";
+import ProductCardMobileBasic from "../components/ProductCardMobileBasic/ProductCardMobileBasic";
+import ProductCardMobileBasicGallery from "../components/ProductCardMobileBasicGallery/ProductCardMobileBasicGallery";
 import ProductModal from "../components/ProductModal/ProductModal";
 import CardTabs, { TabDef } from "../components/CardTabs/CardTabs";
+import VersionToggle, {
+  VersionId,
+} from "../components/VersionToggle/VersionToggle";
 
 // Add a new entry here (and a matching case in the render switch below) to
 // grow past today's variants — the dropdown itself needs no changes.
-const TABS: TabDef[] = [
+const VERSION_1_TABS: TabDef[] = [
   { id: "default", label: "Desktop Basic" },
   { id: "gallery", label: "Desktop Gallery" },
   { id: "quote", label: "Desktop Quote" },
@@ -28,6 +35,20 @@ const TABS: TabDef[] = [
   { id: "mobile-quick-view", label: "Mobile Quick View" },
   { id: "mobile-landscape", label: "Mobile Landscape" },
 ];
+
+// Version 2 is being rebuilt from scratch — only Desktop Basic is live for
+// now. Add entries back here as each new design lands.
+const VERSION_2_TABS: TabDef[] = [
+  { id: "default", label: "Desktop Basic" },
+  { id: "gallery", label: "Desktop Gallery" },
+  { id: "mobile-basic", label: "Mobile Basic" },
+  { id: "mobile-basic-gallery", label: "Mobile Gallery" },
+];
+
+const TABS_BY_VERSION: Record<VersionId, TabDef[]> = {
+  v1: VERSION_1_TABS,
+  v2: VERSION_2_TABS,
+};
 
 // mobile variants show a 2x2 grid (4 instances, 10px gap); desktop variants
 // show a 3x2 grid (6 instances, a slightly larger gap) to make it easier to
@@ -43,13 +64,51 @@ const MOBILE_TABS = new Set([
 // the landscape tail variant is as wide as two portrait tiles plus their
 // gap, so it stacks four to a page in a single column instead of the 2x2
 // grid the other mobile variants use
-const STACKED_TABS = new Set(["mobile-landscape"]);
+const STACKED_TABS = new Set([
+  "mobile-landscape",
+  "mobile-basic",
+  "mobile-basic-gallery",
+]);
+
+// reads ?version=v1|v2 off the URL so a link can deep-link straight to a
+// specific version; anything else (missing, malformed) falls back to v2
+function readVersionFromUrl(): VersionId {
+  if (typeof window === "undefined") return "v2";
+  return new URLSearchParams(window.location.search).get("version") === "v1"
+    ? "v1"
+    : "v2";
+}
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const [version, setVersion] = useState<VersionId>("v2");
+  const [activeTab, setActiveTab] = useState(VERSION_2_TABS[0].id);
+
+  const tabs = TABS_BY_VERSION[version];
 
   const openDetails = () => setModalOpen(true);
+
+  // adopt whatever version the URL points to once the page has mounted
+  // (both on first load and if the user navigates back/forward)
+  useEffect(() => {
+    const applyFromUrl = () => {
+      const fromUrl = readVersionFromUrl();
+      setVersion(fromUrl);
+      setActiveTab(TABS_BY_VERSION[fromUrl][0].id);
+    };
+    applyFromUrl();
+    window.addEventListener("popstate", applyFromUrl);
+    return () => window.removeEventListener("popstate", applyFromUrl);
+  }, []);
+
+  const handleVersionChange = (nextVersion: VersionId) => {
+    setVersion(nextVersion);
+    setActiveTab(TABS_BY_VERSION[nextVersion][0].id);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("version", nextVersion);
+    window.history.replaceState(null, "", url);
+  };
 
   const renderCard = (key: number) => {
     // every other tile (half of the grid) carries the Keysight Premium
@@ -58,9 +117,29 @@ export default function Home() {
 
     switch (activeTab) {
       case "default":
-        return <ProductCard key={key} showPremiumBadge={showPremiumBadge} />;
+        // Version 2's static tile scatters 3 content variants (photo,
+        // condition, warranty) cyclically across the grid instead of
+        // repeating one card, per the Figma "Desktop Default" spec. It
+        // never shows the Premium Used seal (see ProductCardStatic).
+        return version === "v2" ? (
+          <ProductCardStatic
+            key={key}
+            variant={key % 3}
+            onOpenDetails={openDetails}
+          />
+        ) : (
+          <ProductCard key={key} showPremiumBadge={showPremiumBadge} />
+        );
       case "gallery":
-        return (
+        // likewise, V2's click-to-toggle gallery tile scatters the same 3
+        // content variants as Desktop Basic and never shows the seal
+        return version === "v2" ? (
+          <ProductCardGalleryClick
+            key={key}
+            variant={key % 3}
+            onOpenDetails={openDetails}
+          />
+        ) : (
           <ProductCardGallery key={key} showPremiumBadge={showPremiumBadge} />
         );
       case "quote":
@@ -117,16 +196,26 @@ export default function Home() {
             showPremiumBadge={showPremiumBadge}
           />
         );
+      case "mobile-basic":
+        return <ProductCardMobileBasic key={key} variant={key % 3} />;
+      case "mobile-basic-gallery":
+        return <ProductCardMobileBasicGallery key={key} variant={key % 3} />;
       default:
         return null;
     }
   };
 
+  // Version 2's static and gallery tiles both scatter 3 content variants
+  // across a wider 4x2 grid (8 slots) with a tighter 10px gap, per the
+  // Figma spec
+  const isV2Static =
+    version === "v2" && (activeTab === "default" || activeTab === "gallery");
+
   const isMobile = MOBILE_TABS.has(activeTab);
   const isStacked = STACKED_TABS.has(activeTab);
-  const columns = isStacked ? 1 : isMobile ? 2 : 3;
+  const columns = isStacked ? 1 : isV2Static ? 4 : isMobile ? 2 : 3;
   const rows = isStacked ? 4 : 2;
-  const gap = isMobile || isStacked ? 10 : 16;
+  const gap = isMobile || isStacked || isV2Static ? 10 : 16;
 
   return (
     <main
@@ -139,7 +228,9 @@ export default function Home() {
         background: "var(--color-extra-light-gray)",
       }}
     >
-      <CardTabs tabs={TABS} activeId={activeTab} onChange={setActiveTab} />
+      <VersionToggle activeId={version} onChange={handleVersionChange} />
+
+      <CardTabs tabs={tabs} activeId={activeTab} onChange={setActiveTab} />
 
       <div
         style={{

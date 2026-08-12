@@ -74,7 +74,7 @@ export default function ProductCardMobileExpand({
         <div className={styles.imageWrap}>
           <div className={styles.imageInner}>
             <img
-              src="/images/product-default-opt.jpg"
+              src="/images/product-refurbished-front-opt.jpg"
               alt="UXA Signal Analyzer, front view"
             />
             <div className={styles.imageOverlay} />

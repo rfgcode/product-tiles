@@ -1,0 +1,414 @@
+/* Mobile Basic (V2), matched to Figma frame 8144:2714 (361 x 181.375px):
+   the same image + name/price + condition/warranty elements as the desktop
+   tiles, rearranged into a horizontal layout with a pill "Add to Cart"
+   button, and sized to stack four to a page (see STACKED_TABS in
+   app/page.tsx) the same way Mobile Landscape does. */
+.card {
+  position: relative;
+  width: 361px;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
+}
+
+.cardClip {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- top row: image on the left, name/price stacked on the right --- */
+.topRow {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.imageCol {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* justify-end bottom-aligns the name/price content against the image's
+   bottom edge, matching the Figma spec */
+.infoCol {
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px 8px 0 4px;
+}
+
+/* --- image --- */
+.imageWrap {
+  padding: 8px;
+  width: 100%;
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 284 / 213;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.imageInner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+/* --- info button: top-left over the image, matching the other mobile
+   variants' affordance placement --- */
+.infoButton {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-dark-gray);
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
+  transition: background-color 0.15s ease;
+}
+
+.infoButton:hover {
+  background: var(--color-extra-light-gray);
+}
+
+/* --- product info text blocks --- */
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: 6px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modelNumber {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* --- price --- */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.fromLabel {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.22px;
+  text-transform: uppercase;
+  color: var(--color-custom-gray);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.currentPrice {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.discount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-keysight-red);
+}
+
+/* --- bottom feature bar: spans the full card width beneath both columns;
+   condition/warranty features on the left, a pill "Add to Cart" button
+   (this variant's new button style) on the right --- */
+.featureBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.features {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.featureIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+}
+
+.featureLabel {
+  font-size: 12px;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.cartButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-keysight-red);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cartButton:hover {
+  background: #871518;
+}
+
+/* --- quick view modal: full-viewport dark overlay + bottom sheet, same
+   as the V1 mobile variants (ProductCardMobileQuickView) --- */
+.quickViewOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.64);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.quickViewSheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: var(--color-white);
+  border-radius: 8px 8px 0 0;
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewCloseButton {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-black);
+}
+
+.quickViewSummary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-light-gray);
+}
+
+.quickViewThumb {
+  width: 80px;
+  height: 55px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.quickViewSummaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quickViewModel {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewPrice {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.quickViewActions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.quickViewQuoteButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-keysight-red);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewDetailsButton {
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--color-keysight-red);
+  background: none;
+  color: var(--color-keysight-red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quickViewAccordionList {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickViewAccordion {
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewAccordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 16px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-black);
+}
+
+.quickViewAccordionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* animated wrapper: height is tweened between 0 and "auto" in JS, so this
+   must carry no padding of its own — otherwise a collapsed section would
+   still show a sliver of padding. overflow:hidden clips mid-animation. */
+.quickViewAccordionContent {
+  overflow: hidden;
+}
+
+.quickViewAccordionContentInner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.quickViewAccordionContentHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.quickViewOptionRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+  padding-top: 12px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.quickViewOptionRow:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.quickViewOptionCode {
+  font-weight: 600;
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.quickViewOptionLabel {
+  flex: 1;
+  min-width: 0;
+}

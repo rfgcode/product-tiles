@@ -236,13 +236,13 @@ export default function ProductCardQuote({
             <div ref={zoomWrapRef} className={styles.imageZoomWrap}>
               <img
                 ref={imageFrontRef}
-                src="/images/product-default-opt.jpg"
+                src="/images/product-refurbished-front-opt.jpg"
                 alt="UXA Signal Analyzer, front view"
               />
               <img
                 ref={imageBackRef}
                 className={styles.imageBack}
-                src="/images/product-hover-opt.jpg"
+                src="/images/product-refurbished-rear-opt.jpg"
                 alt="UXA Signal Analyzer, rear view"
               />
             </div>

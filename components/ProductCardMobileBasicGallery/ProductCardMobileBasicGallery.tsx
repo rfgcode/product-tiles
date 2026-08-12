@@ -2,17 +2,49 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import styles from "./ProductCardMobileQuickView.module.css";
+import styles from "./ProductCardMobileBasicGallery.module.css";
 import {
   BadgeCheckIcon,
   ChevronIcon,
+  CircleCheckIcon,
   CircleInfoIcon,
   ListCheckIcon,
-  PlugCircleCheckIcon,
-  SquareSlidersIcon,
+  WavePulseIcon,
   XmarkIcon,
 } from "../icons";
 
+// Refurbished gets its own dedicated front/rear photo pair; the other
+// conditions keep the original Desktop Gallery click-to-toggle pair.
+const REFURBISHED_GALLERY_IMAGES = [
+  { src: "/images/product-refurbished-front-opt.jpg", alt: "UXA Signal Analyzer, front view" },
+  { src: "/images/product-refurbished-rear-opt.jpg", alt: "UXA Signal Analyzer, rear view" },
+];
+
+const DEFAULT_GALLERY_IMAGES = [
+  { src: "/images/product-default-opt.jpg", alt: "UXA Signal Analyzer, front view" },
+  { src: "/images/product-hover-opt.jpg", alt: "UXA Signal Analyzer, rear view" },
+];
+
+// Condition alternates the same way as the other Basic/Gallery tiles (see
+// ProductCardStatic); warranty stays constant, matching that pattern.
+const VARIANTS = [
+  {
+    condition: { icon: ListCheckIcon, label: "Refurbished" },
+    images: REFURBISHED_GALLERY_IMAGES,
+  },
+  {
+    condition: { icon: WavePulseIcon, label: "Calibrated" },
+    images: DEFAULT_GALLERY_IMAGES,
+  },
+  {
+    condition: { icon: CircleCheckIcon, label: "Tested" },
+    images: DEFAULT_GALLERY_IMAGES,
+  },
+];
+
+// Same quick-view sheet as the V1 mobile variants (ProductCardMobileQuickView,
+// ProductCardMobileLandscape) — the info button opens this instead of the
+// shared desktop ProductModal.
 const ACCORDION_SECTIONS = [
   "Instrument Options",
   "Services",
@@ -21,24 +53,21 @@ const ACCORDION_SECTIONS = [
   "Accessories",
 ];
 
-// Placeholder rows shown inside whichever accordion section is open — real
-// per-section content isn't modeled yet, so every section reuses the same
-// sample "Installed Options" list from the Figma spec.
 const SAMPLE_OPTION_ROWS = [
   { code: "526", label: "Frequency Range, 2 Hz to 26.5 GHz" },
   { code: "526", label: "Frequency Range, 2 Hz to 26.5 GHz" },
   { code: "526", label: "Frequency Range, 2 Hz to 26.5 GHz" },
 ];
 
-export default function ProductCardMobileQuickView({
-  showPremiumBadge = false,
+export default function ProductCardMobileBasicGallery({
+  variant = 0,
 }: {
-  showPremiumBadge?: boolean;
+  variant?: number;
 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [renderPanel, setRenderPanel] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const shadowRef = useRef<HTMLDivElement>(null);
+  const [activeImage, setActiveImage] = useState(0);
+
+  const content = VARIANTS[variant % VARIANTS.length];
+  const galleryImages = content.images;
 
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [renderQuickView, setRenderQuickView] = useState(false);
@@ -48,59 +77,15 @@ export default function ProductCardMobileQuickView({
   const accordionContentRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const prevOpenSectionRef = useRef<string | null>(null);
 
-  // the card lifts with a drop shadow while the details panel is open
-  useEffect(() => {
-    gsap.to(shadowRef.current, {
-      opacity: isExpanded ? 1 : 0,
-      duration: 0.28,
-      ease: "power2.out",
-    });
-  }, [isExpanded]);
-
-  // mount immediately on open; on close, animate out first, then unmount
-  useEffect(() => {
-    if (isExpanded) {
-      setRenderPanel(true);
-      return;
-    }
-    if (renderPanel && panelRef.current) {
-      gsap.to(panelRef.current, {
-        opacity: 0,
-        y: 12,
-        duration: 0.2,
-        ease: "power2.in",
-        onComplete: () => setRenderPanel(false),
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isExpanded]);
-
-  useEffect(() => {
-    if (isExpanded && panelRef.current) {
-      gsap.fromTo(
-        panelRef.current,
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.34, ease: "back.out(1.6)" }
-      );
-    }
-  }, [renderPanel, isExpanded]);
-
-  // tapping anywhere outside the panel collapses it
-  useEffect(() => {
-    if (!isExpanded) return;
-
-    const handlePointerDown = (e: PointerEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setIsExpanded(false);
-      }
-    };
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [isExpanded]);
+  // tapping the image advances to the next photo, looping forever; it
+  // never bubbles up to the info/cart affordances
+  const handleImageClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveImage((prev) => (prev + 1) % galleryImages.length);
+  };
 
   // quick view modal: mount immediately on open; on close, animate out
-  // first, then unmount — same pattern as the inline details panel above
+  // first, then unmount
   useEffect(() => {
     if (isQuickViewOpen) {
       setRenderQuickView(true);
@@ -144,15 +129,8 @@ export default function ProductCardMobileQuickView({
     return () => document.removeEventListener("keydown", onKey);
   }, [isQuickViewOpen]);
 
-  // only one section open at a time: opening one slides the previously
-  // open section shut so the sheet stays compact.
-  //
-  // Tweening straight to/from the "auto" keyword makes GSAP flip the
-  // element to height:auto, measure it, then snap it back before
-  // animating — that extra flip can paint a taller frame for an instant
-  // and reads as the sheet "jumping" as it grows. Reading scrollHeight
-  // ourselves gets the same target height without ever touching the
-  // live style, so there's nothing to flash.
+  // only one accordion section open at a time: opening one slides the
+  // previously open section shut so the sheet stays compact
   useEffect(() => {
     const prev = prevOpenSectionRef.current;
     if (prev && prev !== openSection) {
@@ -186,116 +164,94 @@ export default function ProductCardMobileQuickView({
 
   return (
     <div className={styles.card}>
-      <div ref={shadowRef} className={styles.shadowLayer} />
-
       <div className={styles.cardClip}>
-        <div className={styles.imageWrap}>
-          <div className={styles.imageInner}>
-            <img
-              src="/images/product-refurbished-front-opt.jpg"
-              alt="UXA Signal Analyzer, front view"
-            />
-            <div className={styles.imageOverlay} />
-            {showPremiumBadge && (
-              <img
-                className={styles.premiumBadge}
-                src="/images/keysight-premium-used-badge.svg"
-                alt="Keysight Premium Used"
-              />
-            )}
+        <div className={styles.topRow}>
+          <div className={styles.imageCol}>
+            <div className={styles.imageWrap}>
+              <div className={styles.imageInner} onClick={handleImageClick}>
+                {galleryImages.map((image, i) => (
+                  <img
+                    key={image.src}
+                    className={`${styles.galleryImage} ${
+                      i === activeImage ? styles.galleryImageActive : ""
+                    }`}
+                    src={image.src}
+                    alt={image.alt}
+                  />
+                ))}
+                <div className={styles.imageOverlay} />
+                <div className={styles.galleryDots}>
+                  {galleryImages.map((image, i) => (
+                    <span
+                      key={image.src}
+                      className={`${styles.galleryDot} ${
+                        i === activeImage ? styles.galleryDotActive : ""
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={styles.infoButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsQuickViewOpen(true);
+              }}
+              aria-label="View product details"
+            >
+              <CircleInfoIcon size={16} />
+            </button>
           </div>
-        </div>
 
-        <div className={styles.infoBlock}>
-          <div className={styles.nameBlock}>
-            <p className={styles.modelNumber}>N9040B-526</p>
-            <p className={styles.description}>
-              UXA Signal Analyzer Multi-touch / 2 Hz to 26.5 GHz
-            </p>
-          </div>
-        </div>
+          <div className={styles.infoCol}>
+            <div className={styles.infoBlock}>
+              <div className={styles.nameBlock}>
+                <p className={styles.modelNumber}>N9040B-526</p>
+                <p className={styles.description}>
+                  UXA Signal Analyzer Multi-touch / 2 Hz to 26.5 GHz
+                </p>
+              </div>
+            </div>
 
-        <div className={styles.priceBlock}>
-          <span className={styles.fromLabel}>From</span>
-          <div className={styles.priceRow}>
-            <span className={styles.currentPrice}>USD 66,634</span>
-            <span className={styles.discount}>&minus;50%</span>
+            <div className={styles.priceBlock}>
+              <span className={styles.fromLabel}>From</span>
+              <div className={styles.priceRow}>
+                <span className={styles.currentPrice}>USD 66,634</span>
+                <span className={styles.discount}>&minus;50%</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <div className={styles.featureBar}>
-          <button
-            type="button"
-            className={styles.featureBarButton}
-            onClick={() => setIsExpanded(true)}
-            aria-expanded={isExpanded}
-          >
+          <div className={styles.features}>
             <div className={styles.feature}>
               <span className={styles.featureIcon}>
-                <ListCheckIcon size={16} />
+                <content.condition.icon size={16} />
               </span>
-              <span className={styles.featureLabel}>Refurbished</span>
-            </div>
-            <span className={styles.chevron}>
-              <ChevronIcon size={12} />
-            </span>
-          </button>
-        </div>
-
-        {renderPanel && (
-          <div
-            ref={panelRef}
-            className={styles.panel}
-            onClick={() => setIsExpanded(false)}
-          >
-            <button
-              type="button"
-              className={styles.panelClose}
-              onClick={() => setIsExpanded(false)}
-              aria-label="Collapse details"
-            >
-              <ChevronIcon size={12} style={{ transform: "rotate(180deg)" }} />
-            </button>
-
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
-                <ListCheckIcon size={16} />
+              <span className={styles.featureLabel}>
+                {content.condition.label}
               </span>
-              <p className={styles.panelLabel}>Refurbished, like-new</p>
             </div>
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
+            <div className={styles.feature}>
+              <span className={styles.featureIcon}>
                 <BadgeCheckIcon size={16} />
               </span>
-              <p className={styles.panelLabel}>Like-new warranty</p>
-            </div>
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
-                <PlugCircleCheckIcon size={18} />
-              </span>
-              <p className={styles.panelLabel}>Accessories included</p>
-            </div>
-            <div className={styles.panelRow}>
-              <span className={styles.panelIcon}>
-                <SquareSlidersIcon size={16} />
-              </span>
-              <p className={styles.panelLabel}>Customizable</p>
+              <span className={styles.featureLabel}>90d warranty</span>
             </div>
           </div>
-        )}
-      </div>
 
-      <button
-        type="button"
-        className={styles.quickViewButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsQuickViewOpen(true);
-        }}
-        aria-label="View product details"
-      >
-        <CircleInfoIcon size={16} />
-      </button>
+          <button
+            type="button"
+            className={styles.cartButton}
+            onClick={(e) => e.stopPropagation()}
+          >
+            Add to Cart
+          </button>
+        </div>
+      </div>
 
       {renderQuickView && (
         <div
@@ -320,7 +276,7 @@ export default function ProductCardMobileQuickView({
             <div className={styles.quickViewSummary}>
               <img
                 className={styles.quickViewThumb}
-                src="/images/product-refurbished-front-opt.jpg"
+                src={galleryImages[activeImage].src}
                 alt="N9040B-526"
               />
               <div className={styles.quickViewSummaryInfo}>
