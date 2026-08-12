@@ -15,6 +15,7 @@ import ProductCardMobileQuickView from "../components/ProductCardMobileQuickView
 import ProductCardMobileLandscape from "../components/ProductCardMobileLandscape/ProductCardMobileLandscape";
 import ProductCardMobileBasic from "../components/ProductCardMobileBasic/ProductCardMobileBasic";
 import ProductCardMobileBasicGallery from "../components/ProductCardMobileBasicGallery/ProductCardMobileBasicGallery";
+import ProductCardMobilePortrait from "../components/ProductCardMobilePortrait/ProductCardMobilePortrait";
 import ProductModal from "../components/ProductModal/ProductModal";
 import CardTabs, { TabDef } from "../components/CardTabs/CardTabs";
 import VersionToggle, {
@@ -43,6 +44,7 @@ const VERSION_2_TABS: TabDef[] = [
   { id: "gallery", label: "Desktop Gallery" },
   { id: "mobile-basic", label: "Mobile Basic" },
   { id: "mobile-basic-gallery", label: "Mobile Gallery" },
+  { id: "mobile-portrait", label: "Mobile Portrait" },
 ];
 
 const TABS_BY_VERSION: Record<VersionId, TabDef[]> = {
@@ -59,6 +61,7 @@ const MOBILE_TABS = new Set([
   "mobile-gallery",
   "mobile-gallery-swipe",
   "mobile-quick-view",
+  "mobile-portrait",
 ]);
 
 // the landscape tail variant is as wide as two portrait tiles plus their
@@ -200,6 +203,8 @@ export default function Home() {
         return <ProductCardMobileBasic key={key} variant={key % 3} />;
       case "mobile-basic-gallery":
         return <ProductCardMobileBasicGallery key={key} variant={key % 3} />;
+      case "mobile-portrait":
+        return <ProductCardMobilePortrait key={key} variant={key % 3} />;
       default:
         return null;
     }

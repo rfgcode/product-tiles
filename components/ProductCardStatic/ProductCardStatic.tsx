@@ -25,19 +25,19 @@ const VARIANTS = [
     image: FRONT_IMAGE,
     alt: FRONT_IMAGE_ALT,
     condition: { icon: ListCheckIcon, label: "Refurbished, like-new" },
-    warranty: { icon: BadgeCheckIcon, label: "Like-new warranty" },
+    warranty: { icon: BadgeCheckIcon, label: "3y warranty" },
   },
   {
     image: SECONDARY_IMAGE,
     alt: SECONDARY_IMAGE_ALT,
     condition: { icon: WavePulseIcon, label: "Used & Calibrated" },
-    warranty: { icon: BadgeCheckIcon, label: "Like-new warranty" },
+    warranty: { icon: BadgeCheckIcon, label: "90d warranty" },
   },
   {
     image: SECONDARY_IMAGE,
     alt: SECONDARY_IMAGE_ALT,
     condition: { icon: CircleCheckIcon, label: "Used & Tested" },
-    warranty: { icon: BadgeCheckIcon, label: "Like-new warranty" },
+    warranty: { icon: BadgeCheckIcon, label: "90d warranty" },
   },
 ];
 

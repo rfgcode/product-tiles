@@ -1,0 +1,149 @@
+/* Mobile Portrait (V2), matched to Figma frame 8148:2866 (176.5 x
+   318.375px): same content as Desktop Basic (image, name, condition/
+   warranty, price) in a single narrow column, sized to sit two-up in the
+   mobile grid like the V1 Mobile Basic tile. No hover states, no info/cart
+   affordances — a static, non-interactive tile per the Figma spec. Condition
+   and warranty use plain disc bullets instead of icons to save space. */
+.card {
+  position: relative;
+  width: 176.5px;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
+}
+
+.cardClip {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- image --- */
+.imageWrap {
+  padding: 8px;
+  width: 100%;
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 284 / 213;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.imageInner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+/* --- product name + condition/warranty bullets --- */
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0 8px 6px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modelNumber {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* condition / warranty: plain bulleted list, replacing the icon rows used
+   on the wider tiles to save horizontal space at this narrow width. Custom
+   dot (rather than a native list marker) so its offset and the gap to the
+   trailing text are both explicitly controllable. */
+.summaryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 9px; /* 6px base, +50% */
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+}
+
+.summaryItem::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  margin-left: 2px; /* nudge right, off the text's left edge above */
+  border-radius: 50%;
+  background: var(--color-dark-gray);
+  flex-shrink: 0;
+}
+
+/* --- price --- */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4.5px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 13px 8px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.fromLabel {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.22px;
+  text-transform: uppercase;
+  color: var(--color-custom-gray);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.currentPrice {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.discount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-keysight-red);
+}

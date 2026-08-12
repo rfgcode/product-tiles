@@ -141,7 +141,7 @@ export default function ProductCardMobileExpand({
 
             <ul className={styles.panelList}>
               <li className={styles.panelItem}>Refurbished, like-new</li>
-              <li className={styles.panelItem}>Like-new warranty</li>
+              <li className={styles.panelItem}>3y warranty</li>
               <li className={styles.panelItem}>Accessories included</li>
               <li className={styles.panelItem}>Customizable</li>
             </ul>

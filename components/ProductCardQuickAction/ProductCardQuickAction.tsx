@@ -356,7 +356,7 @@ export default function ProductCardQuickAction({
                 <span className={styles.featureIcon}>
                   <BadgeCheckIcon size={16} />
                 </span>
-                <span className={styles.featureLabel}>3Y Warranty</span>
+                <span className={styles.featureLabel}>3y warranty</span>
               </div>
             </div>
             <span className={styles.chevron}>
@@ -381,7 +381,7 @@ export default function ProductCardQuickAction({
                   <span className={styles.popoverIcon}>
                     <BadgeCheckIcon size={16} />
                   </span>
-                  <p className={styles.popoverLabel}>Like-new warranty</p>
+                  <p className={styles.popoverLabel}>3y warranty</p>
                 </div>
                 <div className={styles.popoverRow}>
                   <span className={styles.popoverIcon}>

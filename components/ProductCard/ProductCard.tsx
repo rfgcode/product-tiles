@@ -121,7 +121,7 @@ export default function ProductCard({
         <div className={styles.featureBar}>
           <div className={styles.features}>
             <span className={styles.feature}>Refurbished</span>
-            <span className={styles.feature}>3Y Warranty</span>
+            <span className={styles.feature}>3y warranty</span>
           </div>
         </div>
       </div>

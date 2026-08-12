@@ -26,18 +26,22 @@ const DEFAULT_GALLERY_IMAGES = [
 ];
 
 // Condition alternates the same way as the other Basic/Gallery tiles (see
-// ProductCardStatic); warranty stays constant, matching that pattern.
+// ProductCardStatic); warranty follows the condition — refurbished gets the
+// 3y warranty, everything else gets the standard 90d warranty.
 const VARIANTS = [
   {
     condition: { icon: ListCheckIcon, label: "Refurbished" },
+    warranty: "3y warranty",
     images: REFURBISHED_GALLERY_IMAGES,
   },
   {
     condition: { icon: WavePulseIcon, label: "Calibrated" },
+    warranty: "90d warranty",
     images: DEFAULT_GALLERY_IMAGES,
   },
   {
     condition: { icon: CircleCheckIcon, label: "Tested" },
+    warranty: "90d warranty",
     images: DEFAULT_GALLERY_IMAGES,
   },
 ];
@@ -239,7 +243,7 @@ export default function ProductCardMobileBasicGallery({
               <span className={styles.featureIcon}>
                 <BadgeCheckIcon size={16} />
               </span>
-              <span className={styles.featureLabel}>90d warranty</span>
+              <span className={styles.featureLabel}>{content.warranty}</span>
             </div>
           </div>
 

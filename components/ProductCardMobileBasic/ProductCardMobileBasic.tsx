@@ -19,22 +19,26 @@ const SECONDARY_IMAGE = "/images/gallery/gallery-front.jpg";
 const SECONDARY_IMAGE_ALT = "Infiniium V-Series Oscilloscope, front view";
 
 // Condition alternates the same way as the Desktop Basic/Gallery tiles (see
-// ProductCardStatic); warranty stays constant, matching that pattern.
+// ProductCardStatic); warranty follows the condition — refurbished gets the
+// 3y warranty, everything else gets the standard 90d warranty.
 const VARIANTS = [
   {
     image: FRONT_IMAGE,
     alt: FRONT_IMAGE_ALT,
     condition: { icon: ListCheckIcon, label: "Refurbished" },
+    warranty: "3y warranty",
   },
   {
     image: SECONDARY_IMAGE,
     alt: SECONDARY_IMAGE_ALT,
     condition: { icon: WavePulseIcon, label: "Calibrated" },
+    warranty: "90d warranty",
   },
   {
     image: SECONDARY_IMAGE,
     alt: SECONDARY_IMAGE_ALT,
     condition: { icon: CircleCheckIcon, label: "Tested" },
+    warranty: "90d warranty",
   },
 ];
 
@@ -206,7 +210,7 @@ export default function ProductCardMobileBasic({
               <span className={styles.featureIcon}>
                 <BadgeCheckIcon size={16} />
               </span>
-              <span className={styles.featureLabel}>90d warranty</span>
+              <span className={styles.featureLabel}>{content.warranty}</span>
             </div>
           </div>
 

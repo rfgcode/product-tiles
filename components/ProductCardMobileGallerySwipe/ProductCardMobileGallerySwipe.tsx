@@ -222,7 +222,7 @@ export default function ProductCardMobileGallerySwipe({
               <span className={styles.panelIcon}>
                 <BadgeCheckIcon size={16} />
               </span>
-              <p className={styles.panelLabel}>Like-new warranty</p>
+              <p className={styles.panelLabel}>3y warranty</p>
             </div>
             <div className={styles.panelRow}>
               <span className={styles.panelIcon}>
