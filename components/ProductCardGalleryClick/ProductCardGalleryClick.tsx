@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardGalleryClick.module.css";
+import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
   CartCirclePlusIcon,
@@ -137,7 +138,7 @@ export default function ProductCardGalleryClick({
       className={styles.card}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onOpenDetails}
+      onClick={goToProductDetail}
     >
       <div ref={shadowRef} className={styles.shadowLayer} />
 

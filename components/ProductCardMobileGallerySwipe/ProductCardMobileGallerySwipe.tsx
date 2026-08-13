@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardMobileGallerySwipe.module.css";
+import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
   ChevronIcon,
@@ -121,7 +122,7 @@ export default function ProductCardMobileGallerySwipe({
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={goToProductDetail}>
       <div ref={shadowRef} className={styles.shadowLayer} />
 
       <div className={styles.cardClip}>
@@ -186,7 +187,10 @@ export default function ProductCardMobileGallerySwipe({
           <button
             type="button"
             className={styles.featureBarButton}
-            onClick={() => setIsExpanded(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
             aria-expanded={isExpanded}
           >
             <div className={styles.feature}>
@@ -202,7 +206,11 @@ export default function ProductCardMobileGallerySwipe({
         </div>
 
         {renderPanel && (
-          <div ref={panelRef} className={styles.panel}>
+          <div
+            ref={panelRef}
+            className={styles.panel}
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               className={styles.panelClose}

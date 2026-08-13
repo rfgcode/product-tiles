@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardQuickAction.module.css";
+import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
   BookmarkIcon,
@@ -249,6 +250,7 @@ export default function ProductCardQuickAction({
         setIsImageHovered(false);
         setActiveImage(0);
       }}
+      onClick={goToProductDetail}
     >
       <div ref={shadowRef} className={styles.shadowLayer} />
 
@@ -341,7 +343,10 @@ export default function ProductCardQuickAction({
             className={styles.featureBarButton}
             onMouseEnter={handleBottomEnter}
             onMouseLeave={handleBottomLeave}
-            onClick={() => setIsExpanded((prev) => !prev)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded((prev) => !prev);
+            }}
             aria-expanded={isExpanded}
           >
             <div ref={pillRef} className={styles.featurePill} />
@@ -399,7 +404,10 @@ export default function ProductCardQuickAction({
               <button
                 type="button"
                 className={styles.popoverChevron}
-                onClick={() => setIsExpanded(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(false);
+                }}
                 aria-label="Close (also closes on click or mouse-out)"
               >
                 <ChevronIcon size={12} style={{ transform: "rotate(180deg)" }} />

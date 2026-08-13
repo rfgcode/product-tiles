@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardMobileBasic.module.css";
+import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
   ChevronIcon,
@@ -153,7 +154,7 @@ export default function ProductCardMobileBasic({
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={goToProductDetail}>
       <div className={styles.cardClip}>
         <div className={styles.topRow}>
           <div className={styles.imageCol}>
@@ -228,7 +229,10 @@ export default function ProductCardMobileBasic({
         <div
           ref={overlayRef}
           className={styles.quickViewOverlay}
-          onClick={() => setIsQuickViewOpen(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsQuickViewOpen(false);
+          }}
         >
           <div
             ref={sheetRef}

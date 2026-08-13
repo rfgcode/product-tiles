@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCard.module.css";
+import { goToProductDetail } from "../../lib/product";
 
 export default function ProductCard({
   showPremiumBadge = false,
@@ -66,6 +67,7 @@ export default function ProductCard({
       className={styles.card}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={goToProductDetail}
     >
       <div ref={shadowRef} className={styles.shadowLayer} />
 

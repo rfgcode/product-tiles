@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardMobileLandscape.module.css";
+import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
   ChevronIcon,
@@ -178,7 +179,7 @@ export default function ProductCardMobileLandscape({
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={goToProductDetail}>
       <div ref={shadowRef} className={styles.shadowLayer} />
 
       <div className={styles.cardClip}>
@@ -238,7 +239,10 @@ export default function ProductCardMobileLandscape({
           <button
             type="button"
             className={styles.featureBarButton}
-            onClick={() => setIsExpanded(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
             aria-expanded={isExpanded}
           >
             <div className={styles.feature}>
@@ -257,7 +261,10 @@ export default function ProductCardMobileLandscape({
           <div
             ref={panelRef}
             className={styles.panel}
-            onClick={() => setIsExpanded(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(false);
+            }}
           >
             <button
               type="button"
@@ -300,7 +307,10 @@ export default function ProductCardMobileLandscape({
         <div
           ref={overlayRef}
           className={styles.quickViewOverlay}
-          onClick={() => setIsQuickViewOpen(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsQuickViewOpen(false);
+          }}
         >
           <div
             ref={sheetRef}

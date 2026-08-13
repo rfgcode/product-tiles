@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardMobile.module.css";
 import { BookmarkIcon, BookmarkOutlineIcon, ListCheckIcon } from "../icons";
+import { goToProductDetail } from "../../lib/product";
 
 export default function ProductCardMobile({
   showPremiumBadge = false,
@@ -32,7 +33,7 @@ export default function ProductCardMobile({
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={goToProductDetail}>
       <div className={styles.cardClip}>
         <div className={styles.imageWrap}>
           <div className={styles.imageInner}>

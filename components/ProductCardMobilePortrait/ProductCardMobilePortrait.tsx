@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardMobilePortrait.module.css";
 import { ChevronIcon, CircleInfoIcon, ListCheckIcon, XmarkIcon } from "../icons";
+import { goToProductDetail } from "../../lib/product";
 
 // Content mirrors the Desktop Basic tile (see ProductCardStatic) — same
 // photos and the same condition/warranty copy, cycled the same way.
@@ -144,7 +145,7 @@ export default function ProductCardMobilePortrait({
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={goToProductDetail}>
       <div className={styles.cardClip}>
         <div className={styles.imageWrap}>
           <div className={styles.imageInner}>
@@ -192,7 +193,10 @@ export default function ProductCardMobilePortrait({
         <div
           ref={overlayRef}
           className={styles.quickViewOverlay}
-          onClick={() => setIsQuickViewOpen(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsQuickViewOpen(false);
+          }}
         >
           <div
             ref={sheetRef}

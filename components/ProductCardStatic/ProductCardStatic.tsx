@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardStatic.module.css";
+import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
   CartCirclePlusIcon,
@@ -113,6 +114,7 @@ export default function ProductCardStatic({
       className={styles.card}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={goToProductDetail}
     >
       <div ref={shadowRef} className={styles.shadowLayer} />
 

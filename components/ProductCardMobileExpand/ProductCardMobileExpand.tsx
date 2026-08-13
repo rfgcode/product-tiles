@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./ProductCardMobileExpand.module.css";
 import { ChevronIcon, ListCheckIcon } from "../icons";
+import { goToProductDetail } from "../../lib/product";
 
 export default function ProductCardMobileExpand({
   showPremiumBadge = false,
@@ -67,7 +68,7 @@ export default function ProductCardMobileExpand({
   }, [isExpanded]);
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={goToProductDetail}>
       <div ref={shadowRef} className={styles.shadowLayer} />
 
       <div className={styles.cardClip}>
@@ -109,7 +110,10 @@ export default function ProductCardMobileExpand({
           <button
             type="button"
             className={styles.featureBarButton}
-            onClick={() => setIsExpanded(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
             aria-expanded={isExpanded}
           >
             <div className={styles.feature}>
@@ -128,7 +132,10 @@ export default function ProductCardMobileExpand({
           <div
             ref={panelRef}
             className={styles.panel}
-            onClick={() => setIsExpanded(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(false);
+            }}
           >
             <button
               type="button"

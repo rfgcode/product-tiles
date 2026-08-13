@@ -73,13 +73,26 @@ const STACKED_TABS = new Set([
   "mobile-basic-gallery",
 ]);
 
-// reads ?version=v1|v2 off the URL so a link can deep-link straight to a
-// specific version; anything else (missing, malformed) falls back to v2
-function readVersionFromUrl(): VersionId {
-  if (typeof window === "undefined") return "v2";
-  return new URLSearchParams(window.location.search).get("version") === "v1"
-    ? "v1"
-    : "v2";
+// reads ?version=v1|v2&tab=<id> off the URL so a link can deep-link straight
+// to a specific version + tile variant; anything missing or malformed (a tab
+// that doesn't exist under that version, say) falls back to v2 / its first tab.
+// Tiles link out to a real external product page, and the tab picker writes
+// its selection into the URL on every change (see handleTabChange /
+// handleVersionChange below) — so if the user leaves via a tile and then hits
+// the browser Back button, this is what restores the exact variant they were
+// looking at instead of resetting to the default tab.
+function readStateFromUrl(): { version: VersionId; tab: string } {
+  if (typeof window === "undefined") {
+    return { version: "v2", tab: VERSION_2_TABS[0].id };
+  }
+  const params = new URLSearchParams(window.location.search);
+  const version: VersionId = params.get("version") === "v1" ? "v1" : "v2";
+  const versionTabs = TABS_BY_VERSION[version];
+  const tabParam = params.get("tab");
+  const tab = versionTabs.some((t) => t.id === tabParam)
+    ? (tabParam as string)
+    : versionTabs[0].id;
+  return { version, tab };
 }
 
 export default function Home() {
@@ -91,26 +104,36 @@ export default function Home() {
 
   const openDetails = () => setModalOpen(true);
 
-  // adopt whatever version the URL points to once the page has mounted
-  // (both on first load and if the user navigates back/forward)
+  // adopt whatever version + tab the URL points to once the page has
+  // mounted (both on first load and if the user navigates back/forward)
   useEffect(() => {
     const applyFromUrl = () => {
-      const fromUrl = readVersionFromUrl();
-      setVersion(fromUrl);
-      setActiveTab(TABS_BY_VERSION[fromUrl][0].id);
+      const fromUrl = readStateFromUrl();
+      setVersion(fromUrl.version);
+      setActiveTab(fromUrl.tab);
     };
     applyFromUrl();
     window.addEventListener("popstate", applyFromUrl);
     return () => window.removeEventListener("popstate", applyFromUrl);
   }, []);
 
-  const handleVersionChange = (nextVersion: VersionId) => {
-    setVersion(nextVersion);
-    setActiveTab(TABS_BY_VERSION[nextVersion][0].id);
-
+  const updateUrl = (nextVersion: VersionId, nextTab: string) => {
     const url = new URL(window.location.href);
     url.searchParams.set("version", nextVersion);
+    url.searchParams.set("tab", nextTab);
     window.history.replaceState(null, "", url);
+  };
+
+  const handleVersionChange = (nextVersion: VersionId) => {
+    const nextTab = TABS_BY_VERSION[nextVersion][0].id;
+    setVersion(nextVersion);
+    setActiveTab(nextTab);
+    updateUrl(nextVersion, nextTab);
+  };
+
+  const handleTabChange = (nextTab: string) => {
+    setActiveTab(nextTab);
+    updateUrl(version, nextTab);
   };
 
   const renderCard = (key: number) => {
@@ -235,7 +258,7 @@ export default function Home() {
     >
       <VersionToggle activeId={version} onChange={handleVersionChange} />
 
-      <CardTabs tabs={tabs} activeId={activeTab} onChange={setActiveTab} />
+      <CardTabs tabs={tabs} activeId={activeTab} onChange={handleTabChange} />
 
       <div
         style={{
