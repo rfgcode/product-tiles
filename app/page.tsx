@@ -136,10 +136,14 @@ export default function Home() {
     updateUrl(version, nextTab);
   };
 
-  const renderCard = (key: number) => {
+  // `key` is the React list key (always unique across the grid); `contentKey`
+  // drives which variant/badge a tile shows and repeats every `patternLength`
+  // slots, so tripling the grid (see `rows` below) replays the same visual
+  // order 3x instead of continuing the cycle past the block boundary
+  const renderCard = (key: number, contentKey: number = key) => {
     // every other tile (half of the grid) carries the Keysight Premium
     // Used seal over the product photo, per the Figma spec
-    const showPremiumBadge = key % 2 === 1;
+    const showPremiumBadge = contentKey % 2 === 1;
 
     switch (activeTab) {
       case "default":
@@ -150,7 +154,7 @@ export default function Home() {
         return version === "v2" ? (
           <ProductCardStatic
             key={key}
-            variant={key % 3}
+            variant={contentKey % 3}
             onOpenDetails={openDetails}
           />
         ) : (
@@ -162,7 +166,7 @@ export default function Home() {
         return version === "v2" ? (
           <ProductCardGalleryClick
             key={key}
-            variant={key % 3}
+            variant={contentKey % 3}
             onOpenDetails={openDetails}
           />
         ) : (
@@ -223,11 +227,17 @@ export default function Home() {
           />
         );
       case "mobile-basic":
-        return <ProductCardMobileBasic key={key} variant={key % 3} />;
+        return (
+          <ProductCardMobileBasic key={key} variant={contentKey % 3} />
+        );
       case "mobile-basic-gallery":
-        return <ProductCardMobileBasicGallery key={key} variant={key % 3} />;
+        return (
+          <ProductCardMobileBasicGallery key={key} variant={contentKey % 3} />
+        );
       case "mobile-portrait":
-        return <ProductCardMobilePortrait key={key} variant={key % 3} />;
+        return (
+          <ProductCardMobilePortrait key={key} variant={contentKey % 3} />
+        );
       default:
         return null;
     }
@@ -242,7 +252,11 @@ export default function Home() {
   const isMobile = MOBILE_TABS.has(activeTab);
   const isStacked = STACKED_TABS.has(activeTab);
   const columns = isStacked ? 1 : isV2Static ? 4 : isMobile ? 2 : 3;
-  const rows = isStacked ? 4 : 2;
+  const baseRows = isStacked ? 4 : 2;
+  // every Version 2 tab repeats its grid 3x vertically — same tile count,
+  // same cyclical variant order, just stacked again twice more underneath
+  const rows = version === "v2" ? baseRows * 3 : baseRows;
+  const patternLength = columns * baseRows;
   const gap = isMobile || isStacked || isV2Static ? 10 : 16;
 
   return (
@@ -272,7 +286,9 @@ export default function Home() {
           width: "100%",
         }}
       >
-        {Array.from({ length: columns * rows }, (_, i) => renderCard(i))}
+        {Array.from({ length: columns * rows }, (_, i) =>
+          renderCard(i, i % patternLength)
+        )}
       </div>
 
       {modalOpen && <ProductModal onClose={() => setModalOpen(false)} />}
