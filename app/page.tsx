@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./page.module.css";
 import ProductCard from "../components/ProductCard/ProductCard";
 import ProductCardStatic from "../components/ProductCardStatic/ProductCardStatic";
 import ProductCardGallery from "../components/ProductCardGallery/ProductCardGallery";
@@ -259,6 +260,15 @@ export default function Home() {
   const patternLength = columns * baseRows;
   const gap = isMobile || isStacked || isV2Static ? 10 : 16;
 
+  // only Version 2's 4-column desktop grid gets responsive breakpoints (see
+  // page.module.css), wrapping down to 3 then 2 columns as the viewport
+  // narrows. Version 1 stays exactly as it was — fixed column counts at
+  // every width — per request.
+  const isDesktopGrid = isV2Static;
+  const gridClassName = isDesktopGrid
+    ? `${styles.grid} ${styles.gridDesktop4}`
+    : styles.grid;
+
   return (
     <main
       style={{
@@ -275,15 +285,12 @@ export default function Home() {
       <CardTabs tabs={tabs} activeId={activeTab} onChange={handleTabChange} />
 
       <div
+        className={gridClassName}
         style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${columns}, auto)`,
+          gridTemplateColumns: isDesktopGrid
+            ? undefined
+            : `repeat(${columns}, auto)`,
           gap: `${gap}px`,
-          justifyContent: "center",
-          alignItems: "start",
-          alignContent: "start",
-          flex: 1,
-          width: "100%",
         }}
       >
         {Array.from({ length: columns * rows }, (_, i) =>

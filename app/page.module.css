@@ -1,0 +1,27 @@
+.grid {
+  display: grid;
+  justify-content: center;
+  align-items: start;
+  align-content: start;
+  flex: 1;
+  width: 100%;
+}
+
+/* Version 2's 4-column desktop grid (316px fixed-width cards) wraps down as
+   the viewport narrows instead of forcing horizontal scroll or spilling off
+   screen. Version 1's desktop grid stays fixed at 3 columns, unchanged. */
+.gridDesktop4 {
+  grid-template-columns: repeat(4, auto);
+}
+
+@media (max-width: 1400px) {
+  .gridDesktop4 {
+    grid-template-columns: repeat(3, auto);
+  }
+}
+
+@media (max-width: 1100px) {
+  .gridDesktop4 {
+    grid-template-columns: repeat(2, auto);
+  }
+}
