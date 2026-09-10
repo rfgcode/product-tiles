@@ -1,6 +1,7 @@
-/* Mobile Compare & Save (V3): per the Figma spec — Compare sits inline
-   above the price, and Save is a floating icon button over the top-left of
-   the image. No :hover rules — this is a touch surface. */
+/* Mobile Compare & Save (V3): per the Figma spec — Compare and Save sit
+   inline above the price, side by side as plain text buttons, same as the
+   desktop "Desktop Compare & Save" action row. No :hover rules — this is a
+   touch surface. */
 .card {
   position: relative;
   width: 361px;
@@ -72,30 +73,7 @@
   pointer-events: none;
 }
 
-/* --- save: floating icon button, top-left over the image. Always visible
-   (no hover to reveal it on a touch surface) — only the icon itself
-   changes on toggle (color + pop animation), same spirit as the desktop
-   "Desktop Compare Check Mark" bookmark. --- */
-.bookmarkButton {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 3;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: none;
-  background: var(--color-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  color: var(--color-dark-gray);
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
-}
-
-/* --- product info text block + inline Compare button --- */
+/* --- product info text block + inline Compare/Save row --- */
 .infoBlock {
   display: flex;
   flex-direction: column;
@@ -125,6 +103,13 @@
   color: var(--color-black);
 }
 
+.actionsRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
 .actionButton {
   appearance: none;
   display: flex;
@@ -142,6 +127,10 @@
   line-height: 1.5;
   color: var(--color-dark-gray);
   cursor: pointer;
+}
+
+.actionButtonActive {
+  color: var(--color-keysight-red);
 }
 
 .actionIcon {

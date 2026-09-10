@@ -6,11 +6,11 @@ import styles from "./ProductCardMobileCompareSave.module.css";
 import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
-  BookmarkIcon,
-  BookmarkOutlineIcon,
   CircleCheckIcon,
   CompareIcon,
   ListCheckIcon,
+  SaveFilledIcon,
+  SaveIcon,
   WavePulseIcon,
 } from "../icons";
 
@@ -42,12 +42,10 @@ const VARIANTS = [
 
 // Version 3's "Mobile Compare & Save" tile: per the Figma spec — Compare
 // sits inline above the price (same lifted compareSelection state, same
-// numbered red pill, no tile-growth on toggle), and Save is a floating icon
-// button over the top-left of the image. Save behaves like the desktop
-// "Desktop Compare Check Mark" bookmark (icon color + pop animation on
-// toggle) minus the hover-only circle reveal — there's no hover on a touch
-// surface, so the white circle backing is simply always visible instead of
-// fading in.
+// numbered red pill, no tile-growth on toggle), and Save sits right next to
+// it as a plain text button, same as the desktop "Desktop Compare & Save"
+// action row (icon + label, pop animation on toggle, no floating button
+// over the image).
 export default function ProductCardMobileCompareSave({
   variant = 0,
   isComparing = false,
@@ -60,7 +58,7 @@ export default function ProductCardMobileCompareSave({
   onToggleCompare?: () => void;
 }) {
   const [isSaved, setIsSaved] = useState(false);
-  const bookmarkIconRef = useRef<HTMLSpanElement>(null);
+  const saveIconRef = useRef<HTMLSpanElement>(null);
   const content = VARIANTS[variant % VARIANTS.length];
 
   const toggleCompare = (e: React.MouseEvent) => {
@@ -70,15 +68,9 @@ export default function ProductCardMobileCompareSave({
 
   const toggleSave = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const next = !isSaved;
-    setIsSaved(next);
-    gsap.to(bookmarkIconRef.current, {
-      color: next ? "#e90029" : "#373a36",
-      duration: 0.3,
-      ease: "power2.out",
-    });
+    setIsSaved((prev) => !prev);
     gsap.fromTo(
-      bookmarkIconRef.current,
+      saveIconRef.current,
       { scale: 0.6, rotate: -8 },
       { scale: 1, rotate: 0, duration: 0.5, ease: "elastic.out(1, 0.5)" }
     );
@@ -95,18 +87,6 @@ export default function ProductCardMobileCompareSave({
                 <div className={styles.imageOverlay} />
               </div>
             </div>
-
-            <button
-              type="button"
-              className={styles.bookmarkButton}
-              onClick={toggleSave}
-              aria-label={isSaved ? "Remove bookmark" : "Add bookmark"}
-              aria-pressed={isSaved}
-            >
-              <span ref={bookmarkIconRef} style={{ display: "flex" }}>
-                {isSaved ? <BookmarkIcon size={16} /> : <BookmarkOutlineIcon size={16} />}
-              </span>
-            </button>
           </div>
 
           <div className={styles.infoCol}>
@@ -118,22 +98,38 @@ export default function ProductCardMobileCompareSave({
                 </p>
               </div>
 
-              <button
-                type="button"
-                className={isComparing ? styles.compareButtonActive : styles.actionButton}
-                onClick={toggleCompare}
-                aria-label={isComparing ? "Remove from compare" : "Add to compare"}
-                aria-pressed={isComparing}
-              >
-                {isComparing ? (
-                  <span className={styles.compareBadge}>{compareNumber}</span>
-                ) : (
-                  <span className={styles.actionIcon}>
-                    <CompareIcon size={12} />
+              <div className={styles.actionsRow}>
+                <button
+                  type="button"
+                  className={isComparing ? styles.compareButtonActive : styles.actionButton}
+                  onClick={toggleCompare}
+                  aria-label={isComparing ? "Remove from compare" : "Add to compare"}
+                  aria-pressed={isComparing}
+                >
+                  {isComparing ? (
+                    <span className={styles.compareBadge}>{compareNumber}</span>
+                  ) : (
+                    <span className={styles.actionIcon}>
+                      <CompareIcon size={12} />
+                    </span>
+                  )}
+                  Compare
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.actionButton} ${
+                    isSaved ? styles.actionButtonActive : ""
+                  }`}
+                  onClick={toggleSave}
+                  aria-label={isSaved ? "Remove from saved" : "Save"}
+                  aria-pressed={isSaved}
+                >
+                  <span ref={saveIconRef} className={styles.actionIcon}>
+                    {isSaved ? <SaveFilledIcon size={12} /> : <SaveIcon size={12} />}
                   </span>
-                )}
-                Compare
-              </button>
+                  {isSaved ? "Saved" : "Save"}
+                </button>
+              </div>
             </div>
 
             <div className={styles.priceBlock}>
