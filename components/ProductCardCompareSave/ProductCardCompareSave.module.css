@@ -1,0 +1,287 @@
+.card {
+  position: relative;
+  width: 316px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  will-change: box-shadow, border-color;
+}
+
+.shadowLayer {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* clips content to the rounded corners without clipping the card's own
+   box-shadow, which .card itself renders (an ancestor's overflow:hidden
+   would otherwise cut the shadow bleed off at the card's own edge) */
+.cardClip {
+  position: relative;
+  width: 100%;
+  background: var(--color-white);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- image: single static photo, no hover swap --- */
+.imageWrap {
+  padding: 8px;
+  width: 100%;
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 284 / 213;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.imageZoomWrap {
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.imageZoomWrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+}
+
+/* --- product name/description + condition/warranty, blended into one
+   section (no divider) rather than split into its own bordered block --- */
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 8px 16px 10px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modelNumber {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* condition / warranty summary: static, non-interactive, one row each */
+.summaryBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.summaryRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.summaryIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  flex-shrink: 0;
+}
+
+.summaryLabel {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+}
+
+/* --- compare / save action bar, sitting right above the price --- */
+.actionsRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 8px 16px 12px;
+}
+
+.actionButton {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  /* matches .compareButtonActive's (halved) vertical padding so the row
+     doesn't change height when Compare toggles between its plain and pill
+     states */
+  padding: 2.5px 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.actionButton:hover {
+  color: var(--color-black);
+}
+
+.actionButtonActive {
+  color: var(--color-keysight-red);
+}
+
+.actionButtonActive:hover {
+  color: var(--color-keysight-red);
+}
+
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* Compare, once selected: a red pill carrying the tile's position in the
+   selection order (1, 2, 3…), per the Figma "selected" spec — replaces the
+   plain icon+text .actionButton rather than just recoloring it. */
+.compareButtonActive {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-keysight-red);
+  padding: 2.5px 10px 2.5px 5px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-white);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.compareButtonActive:hover {
+  background: #b8011f;
+}
+
+.compareBadge {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-keysight-red);
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* number swaps to an "×" on hover, hinting that clicking again deselects */
+.compareBadgeNumber,
+.compareBadgeRemove {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+.compareBadgeRemove {
+  opacity: 0;
+}
+
+.compareButtonActive:hover .compareBadgeNumber {
+  opacity: 0;
+}
+
+.compareButtonActive:hover .compareBadgeRemove {
+  opacity: 1;
+}
+
+/* --- price --- */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 12px 16px 18px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.promoBadge {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+  border-radius: 2px;
+}
+
+.promoBadge span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22px;
+  text-transform: uppercase;
+  color: var(--color-custom-gray);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.currentPrice {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.discount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-keysight-red);
+}

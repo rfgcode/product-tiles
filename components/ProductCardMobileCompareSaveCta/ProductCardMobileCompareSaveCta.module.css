@@ -1,0 +1,260 @@
+/* Mobile Compare & Save + CTA (V3): Compare kept exactly as V2 has it
+   (inline above the price); Save is dropped entirely (no floating bookmark
+   over the image); the feature bar reuses the app-version "Mobile Basic"
+   layout — condition/warranty on the left, a red pill button on the right
+   (see ProductCardMobileBasic's .cartButton) — relabeled "Request quote".
+   No :hover rules — this is a touch surface. */
+.card {
+  position: relative;
+  width: 361px;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
+}
+
+.cardClip {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- top row: image on the left, name/compare/price stacked on the right --- */
+.topRow {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.imageCol {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* justify-end bottom-aligns the name/price content against the image's
+   bottom edge, matching the Figma spec */
+.infoCol {
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px 8px 0 4px;
+}
+
+/* --- image --- */
+.imageWrap {
+  padding: 8px;
+  width: 100%;
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 284 / 213;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.imageInner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+/* --- product info text block + inline Compare button --- */
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: 6px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modelNumber {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.actionButton {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  /* matches .compareButtonActive's (halved) vertical padding so the tile
+     doesn't change height when Compare toggles between its plain and pill
+     states */
+  padding: 2.5px 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-dark-gray);
+  cursor: pointer;
+}
+
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* Compare, once selected: a red pill carrying the tile's position in the
+   selection order (1, 2, 3…) — identical treatment to V2 and the desktop
+   compare tiles. */
+.compareButtonActive {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-keysight-red);
+  padding: 2.5px 10px 2.5px 5px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.compareBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-keysight-red);
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* --- price --- */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.fromLabel {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.22px;
+  text-transform: uppercase;
+  color: var(--color-custom-gray);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.currentPrice {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.discount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-keysight-red);
+}
+
+/* --- bottom feature bar: condition/warranty features on the left, a red
+   pill CTA on the right, same layout as ProductCardMobileBasic --- */
+.featureBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px;
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.features {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.featureIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+}
+
+.featureLabel {
+  font-size: 12px;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.ctaButton {
+  appearance: none;
+  height: 26px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-keysight-red);
+  color: var(--color-white);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}

@@ -209,6 +209,92 @@ export function CircleCheckIcon({ size = 16, ...props }: IconProps) {
   );
 }
 
+export function CompareIcon({ size = 12, ...props }: IconProps) {
+  const clipId = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 12 12" fill="none" {...props}>
+      <g clipPath={`url(#${clipId})`}>
+        <path
+          d="M3.39883 0.960924C3.61914 0.740611 3.61914 0.384361 3.39883 0.166393C3.17852 -0.0515761 2.82227 -0.0539198 2.60195 0.164049L0.164453 2.60155C-0.0558594 2.82186 -0.0558594 3.17811 0.164453 3.39608L2.60195 5.83592C2.82227 6.05624 3.17852 6.05624 3.39648 5.83592C3.61445 5.61561 3.6168 5.25936 3.39648 5.04139L1.91992 3.56483H11.4379C11.7496 3.56483 12.0004 3.31405 12.0004 3.00233C12.0004 2.69061 11.7496 2.43983 11.4379 2.43983H1.91992L3.39648 0.963268L3.39883 0.960924ZM8.60195 6.96092L10.0785 8.43749H0.560547C0.248828 8.43749 -0.00195312 8.68827 -0.00195312 8.99999C-0.00195312 9.31171 0.248828 9.56249 0.560547 9.56249H10.0785L8.60195 11.039C8.38164 11.2594 8.38164 11.6156 8.60195 11.8336C8.82227 12.0515 9.17852 12.0539 9.39648 11.8336L11.8363 9.39842C12.0566 9.17811 12.0566 8.82186 11.8363 8.60389L9.39883 6.16405C9.17852 5.94374 8.82227 5.94374 8.6043 6.16405C8.38633 6.38436 8.38398 6.74061 8.6043 6.95858L8.60195 6.96092Z"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id={clipId}>
+          <rect width="12" height="12" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+export function SaveIcon({ size = 12, ...props }: IconProps) {
+  const width = (size * 9) / 12;
+  const clipId = useId();
+  return (
+    <svg width={width} height={size} viewBox="0 0 9 12" fill="none" {...props}>
+      <g clipPath={`url(#${clipId})`}>
+        <path
+          d="M0 1.5C0 0.672656 0.672656 0 1.5 0H7.5C8.32734 0 9 0.672656 9 1.5V11.2758C9 11.8758 8.33203 12.232 7.83281 11.8992L4.5 9.675L1.16719 11.8992C0.667969 12.232 0 11.8734 0 11.2758V1.5ZM1.5 1.125C1.29375 1.125 1.125 1.29375 1.125 1.5V10.575L3.87656 8.74219C4.25391 8.49141 4.74609 8.49141 5.12344 8.74219L7.875 10.575V1.5C7.875 1.29375 7.70625 1.125 7.5 1.125H1.5Z"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id={clipId}>
+          <rect width="9" height="12" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+export function SaveFilledIcon({ size = 12, ...props }: IconProps) {
+  const width = (size * 9) / 12;
+  const clipId = useId();
+  return (
+    <svg width={width} height={size} viewBox="0 0 9 12" fill="none" {...props}>
+      <g clipPath={`url(#${clipId})`}>
+        <path
+          d="M1.5 0C0.672656 0 0 0.672656 0 1.5V11.25C0 11.5195 0.145313 11.7703 0.379688 11.9016C0.614063 12.0328 0.902344 12.0305 1.13438 11.8922L4.5 9.87422L7.86328 11.8922C8.09531 12.0305 8.38359 12.0352 8.61797 11.9016C8.85234 11.768 9 11.5195 9 11.25V1.5C9 0.672656 8.32734 0 7.5 0H1.5Z"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id={clipId}>
+          <rect width="9" height="12" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+export function CompareRemoveIcon({ size = 12, ...props }: IconProps) {
+  const width = (size * 9) / 12;
+  return (
+    <svg width={width} height={size} viewBox="0 0 9 12" fill="none" {...props}>
+      <path
+        d="M7.48828 3.67578C7.67187 3.49219 7.67187 3.19531 7.48828 3.01367C7.30469 2.83203 7.00781 2.83008 6.82617 3.01367L4.50195 5.33789L2.17578 3.01172C1.99219 2.82813 1.69531 2.82813 1.51367 3.01172C1.33203 3.19531 1.33008 3.49219 1.51367 3.67383L3.83789 5.99805L1.51172 8.32422C1.32813 8.50781 1.32813 8.80469 1.51172 8.98633C1.69531 9.16797 1.99219 9.16992 2.17383 8.98633L4.49805 6.66211L6.82422 8.98828C7.00781 9.17187 7.30469 9.17187 7.48633 8.98828C7.66797 8.80469 7.66992 8.50781 7.48633 8.32617L5.16211 6.00195L7.48828 3.67578Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+export function CheckIcon({ size = 12, ...props }: IconProps) {
+  const height = (size * 9) / 12;
+  return (
+    <svg width={size} height={height} viewBox="0 0 12 9" fill="none" {...props}>
+      <path
+        d="M1 4.5L4.5 8L11 1"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function CartCirclePlusIcon({ size = 25, ...props }: IconProps) {
   const width = size;
   const height = (size * 22) / 25;
