@@ -13,9 +13,9 @@ import {
 // where the two floating buttons sit over the photo, per the Figma
 // placements — "corners" (V4's Desktop V1: Compare top-left, Save
 // top-right), "corners-bottom" (Desktop V4: the same, dropped to the bottom
-// corners), "stack-top-left" (Desktop V2 and Mobile V1: Save over Compare,
-// top-left) and "stack-bottom-left" (Desktop V3: Save over Compare,
-// bottom-left). Same buttons, same animations; the stacks differ from the
+// corners), "stack-top-left" (Desktop V2 and Mobile V2: Save over Compare,
+// top-left) and "stack-bottom-left" (Save over Compare, bottom-left —
+// currently unused by any tab, kept for the next round of placements). Same buttons, same animations; the stacks differ from the
 // corners in one way: Save is anchored left like Compare, so its "Saved"
 // pill grows to the right instead (see .bookmarkContentClipLeft).
 export type QuickActionPlacement =
@@ -23,6 +23,11 @@ export type QuickActionPlacement =
   | "corners-bottom"
   | "stack-top-left"
   | "stack-bottom-left";
+
+// which button is the upper one in a stack. "save-first" (the default,
+// every V4 stack) puts Save over Compare; "compare-first" (V5's Mobile V2)
+// flips them. Ignored by the two corners placements.
+export type QuickActionStackOrder = "save-first" | "compare-first";
 
 // the desktop tiles use 36px circles; the mobile tiles shrink everything to
 // leave more of the photo showing — 32px circles on Mobile V1, 28px
@@ -39,7 +44,9 @@ const METRICS = {
   desktop: {
     button: 36,
     savedPill: 84,
+    savePill: 76,
     comparePill: 105,
+    compareHoverPill: 103,
     bookmarkIcon: 16,
     compareIcon: 13,
     removeIcon: 18,
@@ -47,7 +54,9 @@ const METRICS = {
   mobile: {
     button: 32,
     savedPill: 80,
+    savePill: 72,
     comparePill: 104,
+    compareHoverPill: 102,
     bookmarkIcon: 15,
     compareIcon: 12,
     removeIcon: 17,
@@ -56,12 +65,23 @@ const METRICS = {
   compact: {
     button: 28,
     savedPill: 76,
+    savePill: 68,
     comparePill: 98,
+    compareHoverPill: 96,
     bookmarkIcon: 14,
     compareIcon: 11,
     removeIcon: 15,
   },
 } as const;
+
+// Hover pills (hoverPills, V5's desktop tile): hovering either button
+// itself — not just the tile — grows it into a white pill with the same
+// width tween the click states use, labelled "Save" / "Compare" next to
+// the unchanged glyph. Clicking then swaps in the click state in place:
+// "Saved" (red glyph) / the red numbered "Compare" pill. The "Save" pill
+// is 8px narrower than "Saved" (one glyph less); the hover "Compare" pill
+// trades the 18px badge + 9px gap for the 13px arrow + 8px gap and a
+// touch more right padding, landing 2px narrower than the red pill.
 
 // how long the "Saved" pill stays up before it collapses back into the
 // circle (see the pillTimeoutRef-driven timeout in toggleSave)
@@ -96,6 +116,8 @@ export default function QuickActionButtons({
   revealOnHover = true,
   size = "desktop",
   placement = "corners",
+  stackOrder = "save-first",
+  hoverPills = false,
   isComparing = false,
   compareNumber,
   onToggleCompare,
@@ -104,6 +126,10 @@ export default function QuickActionButtons({
   revealOnHover?: boolean;
   size?: QuickActionSize;
   placement?: QuickActionPlacement;
+  stackOrder?: QuickActionStackOrder;
+  // grow each button into a labelled white pill on its own hover — see
+  // the note above SAVED_PILL_DURATION. Desktop (revealOnHover) only.
+  hoverPills?: boolean;
   isComparing?: boolean;
   compareNumber?: number;
   onToggleCompare?: () => void;
@@ -113,11 +139,20 @@ export default function QuickActionButtons({
   // and its pill keeps growing leftwards
   const stackedLeft =
     placement === "stack-top-left" || placement === "stack-bottom-left";
+  // only the top-left stack supports the flipped order for now (see
+  // .bookmarkButtonStackTopSwapped / .compareButtonStackTopSwapped)
+  const swapped = placement === "stack-top-left" && stackOrder === "compare-first";
   // hover only means anything where there is a hover
   const revealed = revealOnHover ? isHovered : true;
 
   const [isSaved, setIsSaved] = useState(false);
   const [showSavedPill, setShowSavedPill] = useState(false);
+  // pointer over each button itself (hoverPills only)
+  const [bookmarkHover, setBookmarkHover] = useState(false);
+  const [compareHover, setCompareHover] = useState(false);
+  const usesHoverPills = hoverPills && revealOnHover;
+  const compareHoverClipRef = useRef<HTMLSpanElement>(null);
+  const compareHoverLabelRef = useRef<HTMLSpanElement>(null);
   const bookmarkBtnRef = useRef<HTMLButtonElement>(null);
   const bookmarkCircleRef = useRef<HTMLSpanElement>(null);
   const bookmarkIconRef = useRef<HTMLSpanElement>(null);
@@ -145,6 +180,13 @@ export default function QuickActionButtons({
   // effect has set pillShrinking) until the shrink timeline lands
   const compareShrinking =
     !isComparing && (pillShrinking || wasComparingRef.current);
+
+  // the bookmark pill reads "Save" while hovered-but-unsaved (hover pills
+  // only) and "Saved" otherwise — the label swap while the pill is up is
+  // what the click does, alongside the glyph's red fill + pop
+  const saveLabel = usesHoverPills && !isSaved ? "Save" : "Saved";
+  const savePillOpen =
+    showSavedPill || (usesHoverPills && bookmarkHover && revealed);
 
   // the bookmark's white circle and its glyph move together: revealed while
   // the tile is hovered (if hover applies) and hidden again on hover-out, on
@@ -186,24 +228,31 @@ export default function QuickActionButtons({
   // clip, and leaving no overflow clip in the button avoids the hairline
   // seams Chrome can paint along a clip edge that sits on a fractional
   // pixel.
+  // With hover pills the same tween also opens the pill on the button's
+  // own hover (savePillOpen), and re-runs to widen it from "Save" to
+  // "Saved" when a click swaps the label while it's up.
   useEffect(() => {
-    if (showSavedPill) {
+    if (savePillOpen) {
       gsap.set(bookmarkClipRef.current, { overflow: "hidden" });
       gsap.set(savedLabelRef.current, { visibility: "visible" });
     }
     gsap.to(bookmarkBtnRef.current, {
-      width: showSavedPill ? m.savedPill : m.button,
+      width: savePillOpen
+        ? saveLabel === "Save"
+          ? m.savePill
+          : m.savedPill
+        : m.button,
       duration: 0.3,
       ease: "power2.inOut",
       overwrite: true,
       onComplete: () => {
-        if (!showSavedPill) {
+        if (!savePillOpen) {
           gsap.set(savedLabelRef.current, { visibility: "hidden" });
           gsap.set(bookmarkClipRef.current, { overflow: "visible" });
         }
       },
     });
-  }, [showSavedPill, m]);
+  }, [savePillOpen, saveLabel, m]);
 
   // clears the "Saved" pill's auto-collapse timer if the tile unmounts mid-hold
   useEffect(() => {
@@ -327,6 +376,34 @@ export default function QuickActionButtons({
     }
   }, [isComparing, pillShrinking]);
 
+  // hover "Compare" pill (hover pills only): the selected pill's width
+  // tween, reused for the white icon + "Compare" row while the button is
+  // hovered and unselected. It stays out of the way while the button is
+  // selected or still shrinking — the effect above owns the width then —
+  // and once the shrink lands it re-grows if the pointer is still there.
+  useEffect(() => {
+    if (!usesHoverPills || isComparing || compareShrinking) return;
+    const open = compareHover && revealed;
+    const clip = compareHoverClipRef.current;
+    const label = compareHoverLabelRef.current;
+    if (open) {
+      gsap.set(clip, { overflow: "hidden" });
+      gsap.set(label, { visibility: "visible" });
+    }
+    gsap.to(compareBtnRef.current, {
+      width: open ? m.compareHoverPill : m.button,
+      duration: 0.3,
+      ease: "power2.inOut",
+      overwrite: true,
+      onComplete: () => {
+        if (!open) {
+          gsap.set(label, { visibility: "hidden" });
+          gsap.set(clip, { overflow: "visible" });
+        }
+      },
+    });
+  }, [usesHoverPills, compareHover, revealed, isComparing, compareShrinking, m]);
+
   const toggleCompare = (e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleCompare?.();
@@ -378,8 +455,12 @@ export default function QuickActionButtons({
         ref={bookmarkBtnRef}
         type="button"
         className={`${styles.bookmarkButton} ${sizeClass} ${
+          usesHoverPills ? styles.hoverPills : ""
+        } ${
           placement === "stack-top-left"
-            ? styles.bookmarkButtonStackTop
+            ? `${styles.bookmarkButtonStackTop} ${
+                swapped ? styles.bookmarkButtonStackTopSwapped : ""
+              }`
             : placement === "stack-bottom-left"
               ? styles.bookmarkButtonStackBottom
               : placement === "corners-bottom"
@@ -387,6 +468,8 @@ export default function QuickActionButtons({
                 : ""
         }`}
         onClick={toggleSave}
+        onMouseEnter={usesHoverPills ? () => setBookmarkHover(true) : undefined}
+        onMouseLeave={usesHoverPills ? () => setBookmarkHover(false) : undefined}
         aria-label={isSaved ? "Remove bookmark" : "Add bookmark"}
         aria-pressed={isSaved}
       >
@@ -402,7 +485,7 @@ export default function QuickActionButtons({
             className={styles.savedPillLabel}
             aria-hidden="true"
           >
-            Saved
+            {saveLabel}
           </span>
           <span ref={bookmarkIconRef} className={styles.bookmarkIconWrap}>
             {isSaved ? (
@@ -418,8 +501,12 @@ export default function QuickActionButtons({
         ref={compareBtnRef}
         type="button"
         className={`${styles.compareButton} ${sizeClass} ${
+          usesHoverPills ? styles.hoverPills : ""
+        } ${
           placement === "stack-top-left"
-            ? styles.compareButtonStackTop
+            ? `${styles.compareButtonStackTop} ${
+                swapped ? styles.compareButtonStackTopSwapped : ""
+              }`
             : placement === "stack-bottom-left" ||
                 placement === "corners-bottom"
               ? styles.compareButtonBottom
@@ -432,12 +519,25 @@ export default function QuickActionButtons({
               : ""
         }`}
         onClick={toggleCompare}
+        onMouseEnter={usesHoverPills ? () => setCompareHover(true) : undefined}
+        onMouseLeave={usesHoverPills ? () => setCompareHover(false) : undefined}
         aria-label={isComparing ? "Remove from compare" : "Add to compare"}
         aria-pressed={isComparing}
       >
         <span ref={compareCircleRef} className={styles.compareCircle} />
-        <span ref={compareIconRef} className={styles.compareIconWrap}>
-          <CompareIcon size={m.compareIcon} />
+        {/* icon + (hover pills only) the "Compare" label, as one
+            left-pinned clipped row — see .compareHoverClip */}
+        <span ref={compareHoverClipRef} className={styles.compareHoverClip}>
+          <span ref={compareIconRef} className={styles.compareIconWrap}>
+            <CompareIcon size={m.compareIcon} />
+          </span>
+          <span
+            ref={compareHoverLabelRef}
+            className={styles.compareHoverLabel}
+            aria-hidden="true"
+          >
+            Compare
+          </span>
         </span>
         <span ref={compareClipRef} className={styles.compareContentClip}>
           <span className={styles.compareBadge}>

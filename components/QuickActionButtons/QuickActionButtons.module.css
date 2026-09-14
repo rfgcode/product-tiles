@@ -54,6 +54,14 @@
   background: var(--color-extra-light-gray);
 }
 
+/* hover pills (see hoverPills in the component): the button's own hover
+   grows it into a labelled pill instead of tinting the circle, so the
+   pill stays plain white and the glyph keeps its resting colour */
+.bookmarkButton.hoverPills:not(.touch):hover .bookmarkCircle,
+.compareButton.hoverPills:not(.touch):hover .compareCircle {
+  background: var(--color-white);
+}
+
 /* icon + (when saving) the "Saved" label, laid out as one flex row rather
    than as absolutely-positioned overlays — see .bookmarkContentClip below
    for why */
@@ -197,14 +205,53 @@
   top: 59px;
 }
 
+/* the same top-left stack with the order flipped (stackOrder
+   "compare-first"): Compare takes Save's slot at the top and Save drops
+   into Compare's — same numbers, swapped. Mobile / compact overrides below. */
+.bookmarkButtonStackTopSwapped {
+  top: 59px;
+}
+
+.compareButtonStackTopSwapped {
+  top: 16px;
+}
+
 .compareButtonBottom {
   top: 188px;
 }
 
-.compareIconWrap {
-  position: relative;
+/* the arrow glyph + (hover pills only) a "Compare" label, as one
+   left-pinned clipped row — the mirror of .bookmarkContentClip: the glyph
+   sits at (36 - 13) / 2 = 11.5px from the left, exactly where flex
+   centring put it in the plain circle, and stays there as the button
+   grows to the right and reveals the label. The clip is only switched on
+   (inline) while the label is on screen, as with the other two rows. */
+.compareHoverClip {
+  position: absolute;
+  inset: 0;
   z-index: 1;
   display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 12px 0 11.5px;
+  overflow: visible;
+}
+
+.compareHoverLabel {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-dark-gray);
+  white-space: nowrap;
+  flex-shrink: 0;
+  visibility: hidden;
+}
+
+.compareIconWrap {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
   color: var(--color-dark-gray);
   opacity: 0;
 }
@@ -232,7 +279,7 @@
 }
 
 .compareButtonShrinking .compareCircle,
-.compareButtonShrinking .compareIconWrap {
+.compareButtonShrinking .compareHoverClip {
   display: none;
 }
 
@@ -263,7 +310,7 @@
 }
 
 .compareButtonActive .compareCircle,
-.compareButtonActive .compareIconWrap {
+.compareButtonActive .compareHoverClip {
   display: none;
 }
 
@@ -349,8 +396,21 @@
   left: 13px;
 }
 
+.bookmarkButton.sizeMobile.bookmarkButtonStackTopSwapped {
+  top: 49px;
+}
+
+.compareButton.sizeMobile.compareButtonStackTopSwapped {
+  top: 13px;
+}
+
 .sizeMobile .bookmarkContentClip {
   padding: 0 10px;
+}
+
+/* (32 - 12) / 2 — keeps the glyph centred in the smaller circle */
+.sizeMobile .compareHoverClip {
+  padding-left: 10px;
 }
 
 .sizeMobile .compareContentClip {
@@ -385,8 +445,21 @@
   left: 13px;
 }
 
+.bookmarkButton.sizeCompact.bookmarkButtonStackTopSwapped {
+  top: 45px;
+}
+
+.compareButton.sizeCompact.compareButtonStackTopSwapped {
+  top: 13px;
+}
+
 .sizeCompact .bookmarkContentClip {
   padding: 0 9px;
+}
+
+/* (28 - 11) / 2 */
+.sizeCompact .compareHoverClip {
+  padding-left: 8.5px;
 }
 
 .sizeCompact .compareContentClip {

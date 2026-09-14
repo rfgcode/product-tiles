@@ -49,8 +49,8 @@ const VARIANTS = [
 // whose checkbox + "Compare" row above the price is gone): the photo, name,
 // condition/warranty and price, with the shared Save + Compare floating
 // buttons over the photo (see QuickActionButtons for everything they do).
-// One tile, four placements — Desktop V1 (top corners), V2 (stacked
-// top-left), V3 (stacked bottom-left), V4 (bottom corners). This component
+// One tile, three placements — Desktop V1 (top corners), V2 (stacked
+// top-left), V3 (bottom corners). This component
 // owns only the card itself: its hover state (border, shadow, the subtle
 // photo zoom) and handing that hover to the buttons, which reveal on it.
 // V1, V2, and V3 (the app versions) are untouched.
@@ -60,12 +60,16 @@ export default function ProductCardCompareCheck({
   compareNumber,
   onToggleCompare,
   placement = "corners",
+  hoverPills = false,
 }: {
   variant?: number;
   isComparing?: boolean;
   compareNumber?: number;
   onToggleCompare?: () => void;
   placement?: QuickActionPlacement;
+  // V5's "Desktop": each button grows into a labelled white pill on its
+  // own hover — see QuickActionButtons
+  hoverPills?: boolean;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const shadowRef = useRef<HTMLDivElement>(null);
@@ -183,6 +187,7 @@ export default function ProductCardCompareCheck({
       <QuickActionButtons
         isHovered={isHovered}
         placement={placement}
+        hoverPills={hoverPills}
         isComparing={isComparing}
         compareNumber={compareNumber}
         onToggleCompare={onToggleCompare}

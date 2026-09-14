@@ -10,6 +10,7 @@ import {
 } from "../icons";
 import QuickActionButtons, {
   QuickActionPlacement,
+  QuickActionStackOrder,
 } from "../QuickActionButtons/QuickActionButtons";
 
 const FRONT_IMAGE = "/images/product-refurbished-front-opt.jpg";
@@ -53,6 +54,10 @@ const VARIANTS = [
 // "Mobile V2" is the same tile with a wider photo: a ~55/45 split (Figma:
 // 200 of 361px to the photo) instead of half-and-half, and the buttons
 // dropped to the 28px "compact" size so they still leave the photo room.
+//
+// Version 5's "Mobile V2" goes back to Mobile V1's half-and-half split (and
+// its 32px buttons) but keeps the top-left stack, with the order flipped
+// so Compare sits over Save (see stackOrder).
 export type MobileQuickActionsLayout = "split-half" | "split-wide";
 
 export default function ProductCardMobileQuickActions({
@@ -62,16 +67,19 @@ export default function ProductCardMobileQuickActions({
   onToggleCompare,
   layout = "split-half",
   placement = "stack-top-left",
+  stackOrder = "save-first",
 }: {
   variant?: number;
   isComparing?: boolean;
   compareNumber?: number;
   onToggleCompare?: () => void;
   layout?: MobileQuickActionsLayout;
-  // the same four placements as the desktop tiles — V4's Mobile V1–V4 pair
-  // them with the layouts: top corners + stack top-left on the even split,
-  // stack bottom-left + bottom corners on the wide photo
+  // the same placements as the desktop tiles — V4's Mobile V1–V3 pair
+  // them with the layouts: top corners on the even split, stack top-left +
+  // bottom corners on the wide photo
   placement?: QuickActionPlacement;
+  // which button is on top in a stack — see QuickActionButtons
+  stackOrder?: QuickActionStackOrder;
 }) {
   const content = VARIANTS[variant % VARIANTS.length];
   const wide = layout === "split-wide";
@@ -94,6 +102,7 @@ export default function ProductCardMobileQuickActions({
               revealOnHover={false}
               size={wide ? "compact" : "mobile"}
               placement={placement}
+              stackOrder={stackOrder}
               isComparing={isComparing}
               compareNumber={compareNumber}
               onToggleCompare={onToggleCompare}
