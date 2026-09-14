@@ -24,7 +24,17 @@ export function BookmarkIcon({ size = 16, ...props }: IconProps) {
   const height = size;
   const width = (size * 12) / 16;
   return (
-    <svg width={width} height={height} viewBox="0 0 12 16" fill="none" {...props}>
+    // the path runs edge-to-edge in the viewBox and the box is a fractional
+    // width, so the SVG's default overflow clip (snapped to device pixels)
+    // can shave the outer stroke on one side
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 12 16"
+      fill="none"
+      overflow="visible"
+      {...props}
+    >
       <path
         d="M2 0C0.896875 0 0 0.896875 0 2V15C0 15.3594 0.19375 15.6937 0.50625 15.8687C0.81875 16.0437 1.20313 16.0406 1.5125 15.8562L6 13.1656L10.4844 15.8562C10.7937 16.0406 11.1781 16.0469 11.4906 15.8687C11.8031 15.6906 12 15.3594 12 15V2C12 0.896875 11.1031 0 10 0H2Z"
         fill="currentColor"
@@ -37,7 +47,14 @@ export function BookmarkOutlineIcon({ size = 16, ...props }: IconProps) {
   const width = (size * 12) / 17;
   const height = (size * 17) / 17;
   return (
-    <svg width={width} height={height} viewBox="0 0 12 17" fill="none" {...props}>
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 12 17"
+      fill="none"
+      overflow="visible"
+      {...props}
+    >
       <path
         d="M0 2C0 0.896875 0.896875 0 2 0H10C11.1031 0 12 0.896875 12 2V15.0344C12 15.8344 11.1094 16.3094 10.4438 15.8656L6 12.9L1.55625 15.8656C0.890625 16.3094 0 15.8313 0 15.0344V2ZM2 1.5C1.725 1.5 1.5 1.725 1.5 2V14.1L5.16875 11.6562C5.67187 11.3219 6.32813 11.3219 6.83125 11.6562L10.5 14.1V2C10.5 1.725 10.275 1.5 10 1.5H2Z"
         fill="currentColor"

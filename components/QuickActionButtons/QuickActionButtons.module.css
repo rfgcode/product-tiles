@@ -1,0 +1,451 @@
+/* The Save + Compare floating buttons shared by the desktop and mobile
+   tiles (see QuickActionButtons). Everything is sized for the desktop 36px
+   circle by default; .sizeMobile (at the bottom) overrides the handful of
+   metrics that differ at the mobile 32px size, .sizeCompact likewise for
+   28px. Hover rules are all scoped to :not(.touch) — the mobile tiles are
+   touch surfaces (the component adds .touch whenever revealOnHover is off). */
+
+/* --- save: floating icon button top-right — white circle + glyph revealed
+   on hover, kept on once saved (see the bookmarkCircleRef effect), red fill
+   + pop animation on toggle (see toggleSave), and a width tween into a
+   "Saved" pill on save --- */
+.bookmarkButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  /* one above Compare (3): on the mobile bottom-corners placement the two
+     expanded pills overlap by a few px on the narrow photo column, and the
+     momentary "Saved" confirmation should be the one that reads in full */
+  z-index: 4;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+/* white circular backing — always white when shown (never a bare glyph),
+   and it also becomes the "Saved" pill's rounded-rect background as the
+   button widens; visibility itself is tweened alongside the icon's */
+.bookmarkCircle {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--color-white);
+  /* a white circle over a near-white photo has no visible top/left arc
+     with a downward-only shadow — it reads as cropped. A tight all-round
+     shadow under the soft drop gives the whole circumference an edge.
+     box-shadow rather than filter: drop-shadow — same look, follows the
+     pill's rounded shape as it widens, and no filter rasterisation seams. */
+  box-shadow:
+    0 0 1px rgba(0, 0, 0, 0.14),
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 4px 4px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+}
+
+.bookmarkButton:not(.touch):hover .bookmarkCircle {
+  background: var(--color-extra-light-gray);
+}
+
+/* icon + (when saving) the "Saved" label, laid out as one flex row rather
+   than as absolutely-positioned overlays — see .bookmarkContentClip below
+   for why */
+.bookmarkIconWrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-dark-gray);
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+/* wraps the icon + "Saved" label as a single row, right-aligned and
+   clipped — this is what makes the button widening feel like the label
+   "slides in" next to a fixed icon instead of fading in:
+   justify-content: flex-end pins the icon (last in DOM order) to the
+   button's own right edge, which is itself pinned to the tile via
+   `right: 16px` and never moves; with 12px of padding, that puts the icon
+   dead center of where it sits in the plain 36px circle
+   (36/2 - iconWidth/2 = 12), so it never visibly shifts — the padding only
+   ever affects the icon's position, never the gap below it. overflow:
+   hidden means the "Saved" label — always full opacity, never faded — is
+   simply clipped out of view while the button is narrow, and revealed
+   edge-first as the button grows around the icon, rather than fading in
+   through a half-transparent state. At the resting width the clip alone
+   isn't quite enough — the label's tail would still poke a few px into
+   view next to the icon — so the label is also `visibility: hidden`
+   whenever the button is fully collapsed (toggled around the width tween
+   in the component; binary, never half-transparent). The overflow clip
+   itself is only switched on (inline, by the component) while the label is
+   on screen; at rest nothing needs clipping and an ever-present clip edge
+   can paint a hairline seam on fractional pixel positions. */
+.bookmarkContentClip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 12px;
+  overflow: visible;
+}
+
+.savedPillLabel {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-dark-gray);
+  white-space: nowrap;
+  flex-shrink: 0;
+  visibility: hidden;
+}
+
+/* --- placements (see QuickActionPlacement in the component). The Figma
+   stacks put 32px buttons 16px in from the left with a 6px gap; at this
+   36px size that's a 7px gap, and Save is always the top one. Top-left
+   stack: Save at 16, Compare at 16 + 36 + 7 = 59. Bottom-left stack: inside
+   the desktop card's 1px border the photo area is 239.5px tall
+   (8 + 298 * 213/284 + 8) and Compare's bottom sits 16px above its bottom
+   edge, so Compare is at 239.5 - 16 - 36 ≈ 188 and Save above it at
+   188 - 7 - 36 = 145. --- */
+.bookmarkButtonStackTop {
+  right: auto;
+  left: 16px;
+}
+
+.bookmarkButtonStackBottom {
+  top: 145px;
+  right: auto;
+  left: 16px;
+}
+
+/* bottom corners (Desktop V4): the corners layout dropped to the bottom of
+   the photo — Save keeps its right: 16px, sitting level with the
+   bottom-placed Compare (see .compareButtonBottom) */
+.bookmarkButtonCornersBottom {
+  top: 188px;
+}
+
+/* a left-anchored Save grows to the right, so the "Saved" label has to
+   reveal on the icon's right instead: row-reverse flips the row so the icon
+   (last in DOM order) lands first, and — since the row is packed at
+   flex-end, which row-reverse makes the *left* edge — that pins it 12px in
+   from the left, dead centre of the collapsed circle just as before */
+.bookmarkContentClipLeft {
+  flex-direction: row-reverse;
+}
+
+/* --- compare: floating icon button top-left, mirroring the bookmark button
+   top-right exactly (same size, same reveal of its white circle, no
+   preview pill on hover) — see compareCircleRef/compareIconRef in the
+   component. Only a click swaps this whole button for a red pill via
+   .compareButtonActive below. --- */
+.compareButton {
+  /* the selected pill's hover fill — also the colour of the "×" in the
+     badge (see .compareBadgeRemove), which only ever shows on hover, so the
+     two are kept in one place */
+  --compare-pill-hover: #b8011f;
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+/* white circular backing — same reveal as .bookmarkCircle */
+.compareCircle {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--color-white);
+  /* same all-round shadow as .bookmarkCircle, for the same reason */
+  box-shadow:
+    0 0 1px rgba(0, 0, 0, 0.14),
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 4px 4px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+}
+
+.compareButton:not(.touch):hover .compareCircle {
+  background: var(--color-extra-light-gray);
+}
+
+/* in both stacks Compare sits under Save — see the placement note above
+   .bookmarkButtonStackTop for the arithmetic. .compareButtonBottom is the
+   bottom-of-photo row shared by the bottom-left stack and the bottom
+   corners layout. */
+.compareButtonStackTop {
+  top: 59px;
+}
+
+.compareButtonBottom {
+  top: 188px;
+}
+
+.compareIconWrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  color: var(--color-dark-gray);
+  opacity: 0;
+}
+
+/* selected: a filled red pill replaces the white circle + icon outright,
+   staying visible regardless of hover (unlike the plain circle above). The
+   width itself is tweened from the circle to the pill width in the
+   component (and back on deselect — see .compareButtonShrinking); height
+   always matches the unselected button's own */
+.compareButtonActive {
+  background: var(--color-keysight-red);
+  pointer-events: auto;
+  transition: background-color 0.15s ease;
+}
+
+/* the deselect shrink (see the timeline in the component): keeps the red
+   fill, the hit area and the hidden circle/icon for the tween's duration.
+   The fill itself is tweened inline over the collapse (red → white), so
+   the CSS transition is switched off to keep out of its way; the icon then
+   fades in from the timeline's onComplete once this class is gone. */
+.compareButtonShrinking {
+  background: var(--color-keysight-red);
+  pointer-events: auto;
+  transition: none;
+}
+
+.compareButtonShrinking .compareCircle,
+.compareButtonShrinking .compareIconWrap {
+  display: none;
+}
+
+/* badge + "Compare" label as one left-aligned, clipped row — the mirror of
+   .bookmarkContentClip: the badge stays put at the left while the growing
+   button reveals the label out to its right (and hides it again on the way
+   back in), always at full opacity. Hidden outright (visibility) whenever
+   the button is fully collapsed, toggled around the width tween.
+   Proportions from the Figma "1 Compare" pill (32px tall: 12px left, 16px
+   badge, 8px gap, 13px label, 10px right), scaled by 36/32 for the 36px
+   button and then pulled in a touch on each side: 11 / 9 / 9. */
+.compareContentClip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  padding: 0 9px 0 11px;
+  /* clipped (inline, by the component) only while the pill is up — see
+     .bookmarkContentClip */
+  overflow: visible;
+  visibility: hidden;
+}
+
+.compareButtonActive:not(.touch):hover {
+  background: var(--compare-pill-hover);
+}
+
+.compareButtonActive .compareCircle,
+.compareButtonActive .compareIconWrap {
+  display: none;
+}
+
+/* the number sits in a white circle on the red pill, red text — the
+   Figma badge is a 16px circle with an 11px number; both scaled by 1.125
+   for the 36px-tall button (see .compareButtonActive) */
+.compareBadge {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-keysight-red);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22px;
+  line-height: 1;
+}
+
+/* the word "Compare", per V3's ProductCardCompareSave pattern — sits next
+   to the badge and stays put regardless of hover (only the badge's own
+   number swaps for "×", see below) */
+.compareActiveLabel {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-white);
+  white-space: nowrap;
+}
+
+/* number swaps to an "×" on hover, hinting that clicking again deselects —
+   same trick as V3's ProductCardCompareSave */
+.compareBadgeNumber,
+.compareBadgeRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+.compareBadgeRemove {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  /* same dark red as the pill behind it while hovered — the only time
+     this "×" is visible */
+  color: var(--compare-pill-hover);
+}
+
+.compareButtonActive:not(.touch):hover .compareBadgeNumber {
+  opacity: 0;
+}
+
+.compareButtonActive:not(.touch):hover .compareBadgeRemove {
+  opacity: 1;
+}
+
+/* --- mobile size (Mobile V1): the Figma mobile tile's own metrics — 32px
+   circles 13px in from the edges with a 4px gap, Save over Compare — and
+   the Figma pill's raw 32px-tall proportions (12px left, 16px badge, 8px
+   gap, 10px right) rather than the desktop's scaled-up ones. The "Saved"
+   pill's 10px padding keeps the 15px glyph centred in the 32px circle
+   (32/2 - 11.25/2 ≈ 10). Only the stacked top-left placement is used on
+   mobile. --- */
+.bookmarkButton.sizeMobile,
+.compareButton.sizeMobile {
+  width: 32px;
+  height: 32px;
+}
+
+.bookmarkButton.sizeMobile.bookmarkButtonStackTop {
+  top: 13px;
+  left: 13px;
+}
+
+.compareButton.sizeMobile.compareButtonStackTop {
+  top: 49px;
+  left: 13px;
+}
+
+.sizeMobile .bookmarkContentClip {
+  padding: 0 10px;
+}
+
+.sizeMobile .compareContentClip {
+  gap: 8px;
+  padding: 0 10px 0 12px;
+}
+
+.sizeMobile .compareBadge {
+  width: 16px;
+  height: 16px;
+  font-size: 11px;
+}
+
+/* --- compact size (Mobile V2): the Figma wide-photo mobile tile's 28px
+   circles, still 13px in from the edges with a 4px gap (Save at 13,
+   Compare at 13 + 28 + 4 = 45). Pill metrics scaled down from the 32px
+   ones: badge 14, gap 7, paddings 10 / 9; the "Saved" pill's 9px padding
+   keeps the 14px glyph centred in the 28px circle (28/2 - 10.5/2 ≈ 9). --- */
+.bookmarkButton.sizeCompact,
+.compareButton.sizeCompact {
+  width: 28px;
+  height: 28px;
+}
+
+.bookmarkButton.sizeCompact.bookmarkButtonStackTop {
+  top: 13px;
+  left: 13px;
+}
+
+.compareButton.sizeCompact.compareButtonStackTop {
+  top: 45px;
+  left: 13px;
+}
+
+.sizeCompact .bookmarkContentClip {
+  padding: 0 9px;
+}
+
+.sizeCompact .compareContentClip {
+  gap: 7px;
+  padding: 0 9px 0 10px;
+}
+
+.sizeCompact .compareBadge {
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+}
+
+/* --- mobile placements. The mobile tiles position these buttons inside
+   the photo column, whose height is exactly the photo area, so the bottom
+   placements can anchor with `bottom` instead of the desktop tiles'
+   computed `top` values. 13px inset from every edge, 4px between stacked
+   buttons — so the upper button of a bottom stack sits at
+   13 + button + 4 = 49px (32px buttons) / 45px (28px). --- */
+.bookmarkButton.sizeMobile,
+.bookmarkButton.sizeCompact {
+  top: 13px;
+  right: 13px;
+}
+
+.compareButton.sizeMobile,
+.compareButton.sizeCompact {
+  top: 13px;
+  left: 13px;
+}
+
+.bookmarkButton.sizeMobile.bookmarkButtonStackTop,
+.bookmarkButton.sizeCompact.bookmarkButtonStackTop {
+  right: auto;
+  left: 13px;
+}
+
+.bookmarkButton.sizeMobile.bookmarkButtonStackBottom {
+  top: auto;
+  bottom: 49px;
+  right: auto;
+  left: 13px;
+}
+
+.bookmarkButton.sizeCompact.bookmarkButtonStackBottom {
+  top: auto;
+  bottom: 45px;
+  right: auto;
+  left: 13px;
+}
+
+.bookmarkButton.sizeMobile.bookmarkButtonCornersBottom,
+.bookmarkButton.sizeCompact.bookmarkButtonCornersBottom {
+  top: auto;
+  bottom: 13px;
+}
+
+.compareButton.sizeMobile.compareButtonBottom,
+.compareButton.sizeCompact.compareButtonBottom {
+  top: auto;
+  bottom: 13px;
+}

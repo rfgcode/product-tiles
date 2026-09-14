@@ -1,3 +1,6 @@
+/* Version 4's desktop tile — the card itself only; the Save + Compare
+   floating buttons over the photo live in QuickActionButtons, positioned
+   against this .card (position: relative). */
 .card {
   position: relative;
   width: 316px;
@@ -130,49 +133,6 @@
   color: var(--color-dark-gray);
 }
 
-/* --- compare checkbox row, per the Figma spec --- */
-.compareRow {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 9px 16px 12px;
-}
-
-.compareButton {
-  appearance: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: none;
-  background: transparent;
-  padding: 0;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--color-dark-gray);
-  cursor: pointer;
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 2px;
-  border: 1px solid var(--color-medium-gray);
-  background: var(--color-white);
-  color: var(--color-white);
-  flex-shrink: 0;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.checkboxChecked {
-  background: var(--color-keysight-red);
-  border-color: var(--color-keysight-red);
-}
-
 /* --- price --- */
 .priceBlock {
   display: flex;
@@ -217,48 +177,4 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--color-keysight-red);
-}
-
-/* --- save: floating icon button top-right, same behavior as V1's
-   "Desktop Quick Action" bookmark (fades in on hover, stays visible once
-   saved, red fill + pop animation on toggle — see toggleSave) --- */
-.bookmarkButton {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 3;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  pointer-events: none;
-}
-
-/* white circular backing — hover-only, never lingers just because the tile
-   is saved (unlike the icon itself, see .bookmarkIconWrap below) */
-.bookmarkCircle {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: var(--color-white);
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
-  opacity: 0;
-}
-
-.bookmarkButton:hover .bookmarkCircle {
-  background: var(--color-extra-light-gray);
-}
-
-.bookmarkIconWrap {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  color: var(--color-dark-gray);
-  opacity: 0;
 }

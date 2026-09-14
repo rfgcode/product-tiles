@@ -6,13 +6,15 @@ import styles from "./ProductCardCompareCheck.module.css";
 import { goToProductDetail } from "../../lib/product";
 import {
   BadgeCheckIcon,
-  BookmarkIcon,
-  BookmarkOutlineIcon,
-  CheckIcon,
   CircleCheckIcon,
   ListCheckIcon,
   WavePulseIcon,
 } from "../icons";
+import QuickActionButtons, {
+  QuickActionPlacement,
+} from "../QuickActionButtons/QuickActionButtons";
+
+export type { QuickActionPlacement } from "../QuickActionButtons/QuickActionButtons";
 
 // Product photos mirrored from the V1 tiles — well-composed, generously
 // padded shots rather than tightly-cropped marketing photography, which
@@ -43,36 +45,34 @@ const VARIANTS = [
   },
 ];
 
-// Version 3's "Desktop Compare Check Mark" tile: another fork off
-// "Desktop Simplified", per the Figma spec — Compare becomes a plain
-// checkbox + label (no numbered pill/badge; the toast at the bottom of the
-// page still reports the running total), and Save moves to a floating icon
-// button top-right, modeled on V1's "Desktop Quick Action" bookmark but with
-// its own visibility split: the white circular backing only shows on hover
-// (see bookmarkCircleRef), while the bookmark glyph itself also stays
-// visible with no circle behind it once saved, even after the mouse leaves
-// (see bookmarkIconRef) — plus the red fill + pop animation on toggle. V1
-// and V2 are untouched.
+// Version 4's desktop tile (formerly V3's "Desktop Compare Check Mark",
+// whose checkbox + "Compare" row above the price is gone): the photo, name,
+// condition/warranty and price, with the shared Save + Compare floating
+// buttons over the photo (see QuickActionButtons for everything they do).
+// One tile, four placements — Desktop V1 (top corners), V2 (stacked
+// top-left), V3 (stacked bottom-left), V4 (bottom corners). This component
+// owns only the card itself: its hover state (border, shadow, the subtle
+// photo zoom) and handing that hover to the buttons, which reveal on it.
+// V1, V2, and V3 (the app versions) are untouched.
 export default function ProductCardCompareCheck({
   variant = 0,
   isComparing = false,
+  compareNumber,
   onToggleCompare,
+  placement = "corners",
 }: {
   variant?: number;
   isComparing?: boolean;
+  compareNumber?: number;
   onToggleCompare?: () => void;
+  placement?: QuickActionPlacement;
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
   const shadowRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const zoomWrapRef = useRef<HTMLDivElement>(null);
-  const bookmarkBtnRef = useRef<HTMLButtonElement>(null);
-  const bookmarkCircleRef = useRef<HTMLSpanElement>(null);
-  const bookmarkIconRef = useRef<HTMLSpanElement>(null);
 
   const content = VARIANTS[variant % VARIANTS.length];
-  const showBookmark = isHovered || isSaved;
 
   // card outline + drop shadow: strictly tied to real cursor hover, nothing else
   useEffect(() => {
@@ -97,30 +97,6 @@ export default function ProductCardCompareCheck({
     });
   }, [isHovered]);
 
-  // the white circular backing only ever shows on hover — unlike the icon
-  // itself, it never lingers once saved
-  useEffect(() => {
-    gsap.to(bookmarkCircleRef.current, {
-      opacity: isHovered ? 1 : 0,
-      duration: isHovered ? 0.28 : 0.16,
-      ease: "power2.out",
-    });
-  }, [isHovered]);
-
-  // bookmark icon fade — a saved item stays visible (just the icon, no
-  // circle) even once the mouse leaves, same pattern as
-  // ProductCardQuickAction
-  useEffect(() => {
-    gsap.to(bookmarkIconRef.current, {
-      opacity: showBookmark ? 1 : 0,
-      duration: showBookmark ? 0.28 : 0.16,
-      ease: "power2.out",
-    });
-    gsap.set(bookmarkBtnRef.current, {
-      pointerEvents: showBookmark ? "auto" : "none",
-    });
-  }, [showBookmark]);
-
   // safety net: a fast cursor exit (or leaving the window/tab) can skip the
   // card's own mouseleave — this double-checks real cursor position on every
   // document-wide mousemove while hovered, so the state can never get stuck
@@ -144,27 +120,6 @@ export default function ProductCardCompareCheck({
       document.removeEventListener("mouseleave", handleWindowLeave);
     };
   }, [isHovered]);
-
-  const toggleCompare = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleCompare?.();
-  };
-
-  const toggleSave = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const next = !isSaved;
-    setIsSaved(next);
-    gsap.to(bookmarkIconRef.current, {
-      color: next ? "#e90029" : "#373a36",
-      duration: 0.3,
-      ease: "power2.out",
-    });
-    gsap.fromTo(
-      bookmarkIconRef.current,
-      { scale: 0.6, rotate: -8 },
-      { scale: 1, rotate: 0, duration: 0.5, ease: "elastic.out(1, 0.5)" }
-    );
-  };
 
   return (
     <div
@@ -214,25 +169,6 @@ export default function ProductCardCompareCheck({
           </div>
         </div>
 
-        <div className={styles.compareRow}>
-          <button
-            type="button"
-            className={styles.compareButton}
-            onClick={toggleCompare}
-            aria-label={isComparing ? "Remove from compare" : "Add to compare"}
-            aria-pressed={isComparing}
-          >
-            <span
-              className={`${styles.checkbox} ${
-                isComparing ? styles.checkboxChecked : ""
-              }`}
-            >
-              {isComparing && <CheckIcon size={10} />}
-            </span>
-            Compare
-          </button>
-        </div>
-
         <div className={styles.priceBlock}>
           <div className={styles.promoBadge}>
             <span>from</span>
@@ -244,19 +180,13 @@ export default function ProductCardCompareCheck({
         </div>
       </div>
 
-      <button
-        ref={bookmarkBtnRef}
-        type="button"
-        className={styles.bookmarkButton}
-        onClick={toggleSave}
-        aria-label={isSaved ? "Remove bookmark" : "Add bookmark"}
-        aria-pressed={isSaved}
-      >
-        <span ref={bookmarkCircleRef} className={styles.bookmarkCircle} />
-        <span ref={bookmarkIconRef} className={styles.bookmarkIconWrap}>
-          {isSaved ? <BookmarkIcon size={16} /> : <BookmarkOutlineIcon size={16} />}
-        </span>
-      </button>
+      <QuickActionButtons
+        isHovered={isHovered}
+        placement={placement}
+        isComparing={isComparing}
+        compareNumber={compareNumber}
+        onToggleCompare={onToggleCompare}
+      />
     </div>
   );
 }

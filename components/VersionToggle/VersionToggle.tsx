@@ -3,12 +3,13 @@
 import styles from "./VersionToggle.module.css";
 import { ChevronIcon } from "../icons";
 
-export type VersionId = "v1" | "v2" | "v3";
+export type VersionId = "v1" | "v2" | "v3" | "v4";
 
 const VERSIONS: { id: VersionId; label: string }[] = [
   { id: "v1", label: "Version 1" },
   { id: "v2", label: "Version 2" },
   { id: "v3", label: "Version 3" },
+  { id: "v4", label: "Version 4" },
 ];
 
 export default function VersionToggle({

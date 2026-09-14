@@ -20,6 +20,7 @@ import ProductCardMobileLandscape from "../components/ProductCardMobileLandscape
 import ProductCardMobileBasic from "../components/ProductCardMobileBasic/ProductCardMobileBasic";
 import ProductCardMobileCompareSave from "../components/ProductCardMobileCompareSave/ProductCardMobileCompareSave";
 import ProductCardMobileCompareCheck from "../components/ProductCardMobileCompareCheck/ProductCardMobileCompareCheck";
+import ProductCardMobileQuickActions from "../components/ProductCardMobileQuickActions/ProductCardMobileQuickActions";
 import ProductCardMobileCompareSaveCta from "../components/ProductCardMobileCompareSaveCta/ProductCardMobileCompareSaveCta";
 import ProductCardMobileBasicGallery from "../components/ProductCardMobileBasicGallery/ProductCardMobileBasicGallery";
 import ProductCardMobilePortrait from "../components/ProductCardMobilePortrait/ProductCardMobilePortrait";
@@ -90,10 +91,31 @@ const VERSION_3_TABS: TabDef[] = [
   { id: "mobile-compare-save-cta", label: "Mobile Compare & Save + CTA" },
 ];
 
+// Version 4 reuses V3's "Desktop Compare Check Mark" and "Mobile Compare
+// Check Mark" tiles verbatim (same ids, so the render switch above needs no
+// new cases) — just the two of them, relabeled as this version's only tabs.
+const VERSION_4_TABS: TabDef[] = [
+  { id: "compare-check", label: "Desktop V1" },
+  // the same tile with its two floating buttons stacked bottom-left instead
+  // (see ProductCardCompareCheck's placement prop)
+  { id: "compare-check-stack-bottom", label: "Desktop V2" },
+  // V1's corners, moved down to the bottom corners of the photo
+  { id: "compare-check-corners-bottom", label: "Desktop V3" },
+  // the mobile adaptation (see ProductCardMobileQuickActions): the same two
+  // floating buttons over the photo of V3's mobile landscape layout, in the
+  // same three placements as Desktop V1–V3 — V1 on the even split, V2/V3
+  // with the photo widened to a ~55/45 split and the buttons dropped a
+  // size to suit
+  { id: "mobile-corners", label: "Mobile V1" },
+  { id: "mobile-wide-stack-bottom", label: "Mobile V2" },
+  { id: "mobile-wide-corners-bottom", label: "Mobile V3" },
+];
+
 const TABS_BY_VERSION: Record<VersionId, TabDef[]> = {
   v1: VERSION_1_TABS,
   v2: VERSION_2_TABS,
   v3: VERSION_3_TABS,
+  v4: VERSION_4_TABS,
 };
 
 // mobile variants show a 2x2 grid (4 instances, 10px gap); desktop variants
@@ -118,6 +140,9 @@ const STACKED_TABS = new Set([
   "mobile-compare-save",
   "mobile-compare-check",
   "mobile-compare-save-cta",
+  "mobile-corners",
+  "mobile-wide-stack-bottom",
+  "mobile-wide-corners-bottom",
 ]);
 
 // every V3 tab (desktop or mobile) with a Compare/Save action — drives the
@@ -125,15 +150,21 @@ const STACKED_TABS = new Set([
 const COMPARE_TABS = new Set([
   "compare-save",
   "compare-check",
+  "compare-check-stack-bottom",
+  "compare-check-corners-bottom",
   "compare-save-cta",
   "mobile-compare-save",
   "mobile-compare-check",
   "mobile-compare-save-cta",
+  "mobile-corners",
+  "mobile-wide-stack-bottom",
+  "mobile-wide-corners-bottom",
 ]);
 
-// reads ?version=v1|v2&tab=<id> off the URL so a link can deep-link straight
-// to a specific version + tile variant; anything missing or malformed (a tab
-// that doesn't exist under that version, say) falls back to v2 / its first tab.
+// reads ?version=v1|v2|v3|v4&tab=<id> off the URL so a link can deep-link
+// straight to a specific version + tile variant; anything missing or malformed
+// (a tab that doesn't exist under that version, say) falls back to v4 / its
+// first tab.
 // Tiles link out to a real external product page, and the tab picker writes
 // its selection into the URL on every change (see handleTabChange /
 // handleVersionChange below) — so if the user leaves via a tile and then hits
@@ -141,12 +172,14 @@ const COMPARE_TABS = new Set([
 // looking at instead of resetting to the default tab.
 function readStateFromUrl(): { version: VersionId; tab: string } {
   if (typeof window === "undefined") {
-    return { version: "v2", tab: VERSION_2_TABS[0].id };
+    return { version: "v4", tab: VERSION_4_TABS[0].id };
   }
   const params = new URLSearchParams(window.location.search);
   const versionParam = params.get("version");
   const version: VersionId =
-    versionParam === "v1" || versionParam === "v3" ? versionParam : "v2";
+    versionParam === "v1" || versionParam === "v2" || versionParam === "v3"
+      ? versionParam
+      : "v4";
   const versionTabs = TABS_BY_VERSION[version];
   const tabParam = params.get("tab");
   const tab = versionTabs.some((t) => t.id === tabParam)
@@ -157,8 +190,8 @@ function readStateFromUrl(): { version: VersionId; tab: string } {
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [version, setVersion] = useState<VersionId>("v2");
-  const [activeTab, setActiveTab] = useState(VERSION_2_TABS[0].id);
+  const [version, setVersion] = useState<VersionId>("v4");
+  const [activeTab, setActiveTab] = useState(VERSION_4_TABS[0].id);
   // V3's "Desktop Compare & Save" tile only — which tile ids are selected
   // for compare, in selection order (so each tile can number itself 1, 2,
   // 3… and the toast below can report a total count)
@@ -254,17 +287,28 @@ export default function Home() {
           />
         );
       case "compare-check":
-        // V3-only: another duplicate of "Desktop Simplified" — Compare is a
-        // plain checkbox (no numbered badge) and Save is a floating
-        // top-right icon button (see ProductCardCompareCheck). Shares the
-        // same lifted compareSelection state as "compare-save" above; the
-        // toast at the bottom of the page doesn't change between the two.
+      case "compare-check-stack-bottom":
+      case "compare-check-corners-bottom":
+        // Also V4's "Desktop V1" / "V2" / "V3": one tile, three placements
+        // of its floating Compare (numbered pill) and Save buttons — top
+        // corners, stacked bottom-left, bottom corners (see
+        // ProductCardCompareCheck).
+        // Shares the same lifted compareSelection state as "compare-save"
+        // above; the toast at the bottom of the page doesn't change.
         return (
           <ProductCardCompareCheck
             key={key}
             variant={contentKey % 3}
             isComparing={compareSelection.includes(key)}
+            compareNumber={compareSelection.indexOf(key) + 1}
             onToggleCompare={() => toggleCompareSelection(key)}
+            placement={
+              activeTab === "compare-check-stack-bottom"
+                ? "stack-bottom-left"
+                : activeTab === "compare-check-corners-bottom"
+                  ? "corners-bottom"
+                  : "corners"
+            }
           />
         );
       case "compare-save-cta":
@@ -367,6 +411,36 @@ export default function Home() {
             onToggleCompare={() => toggleCompareSelection(key)}
           />
         );
+      case "mobile-corners":
+      case "mobile-wide-stack-bottom":
+      case "mobile-wide-corners-bottom":
+        // V4's "Mobile V1"–"V3": the shared Save + Compare floating buttons
+        // over the photo of the mobile landscape layout, in the same three
+        // placements as Desktop V1–V3 — V1 on the even split, V2/V3 with
+        // the photo widened (see ProductCardMobileQuickActions). Same lifted
+        // compareSelection state and toast as the desktop V4 tiles.
+        return (
+          <ProductCardMobileQuickActions
+            key={key}
+            variant={contentKey % 3}
+            isComparing={compareSelection.includes(key)}
+            compareNumber={compareSelection.indexOf(key) + 1}
+            onToggleCompare={() => toggleCompareSelection(key)}
+            layout={
+              activeTab === "mobile-wide-stack-bottom" ||
+              activeTab === "mobile-wide-corners-bottom"
+                ? "split-wide"
+                : "split-half"
+            }
+            placement={
+              activeTab === "mobile-corners"
+                ? "corners"
+                : activeTab === "mobile-wide-stack-bottom"
+                  ? "stack-bottom-left"
+                  : "corners-bottom"
+            }
+          />
+        );
       case "mobile-compare-check":
         // V3-only: "Mobile Compare & Save"'s layout with Compare swapped
         // for the desktop check-mark tile's plain checkbox — no numbered
@@ -416,7 +490,9 @@ export default function Home() {
     (activeTab === "default" ||
       activeTab === "gallery" ||
       activeTab === "compare-save" ||
-      activeTab === "compare-check");
+      activeTab === "compare-check" ||
+      activeTab === "compare-check-stack-bottom" ||
+      activeTab === "compare-check-corners-bottom");
 
   const isMobile = MOBILE_TABS.has(activeTab);
   const isStacked = STACKED_TABS.has(activeTab);
@@ -475,7 +551,7 @@ export default function Home() {
 
       <CompareToast
         visible={
-          version === "v3" &&
+          (version === "v3" || version === "v4") &&
           COMPARE_TABS.has(activeTab) &&
           compareSelection.length >= 2
         }
